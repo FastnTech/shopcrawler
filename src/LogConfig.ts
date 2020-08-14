@@ -4,3 +4,4 @@ CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLeve
 
 export const catDatabaseService = new Category("database_service");
 export const catCategoryProd = new Category("category", catDatabaseService);
+export const catProductProd = new Category("product", catDatabaseService);

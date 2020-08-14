@@ -1,10 +1,11 @@
 import { Page } from 'puppeteer';
 import Shop from '../abstract/Shop';
-import ShopProduct from '../models/ShopProduct';
 import { IShopCategory } from '../models/ShopCategory';
+import { IShopProduct } from '../models/ShopProduct';
+import { catCategoryProd } from '../LogConfig';
 
 class Hepsiburada extends Shop {
-    shopUrl = "https://hepsiburada.com/";
+    shopUrl = "https://hepsiburada.com";
     shopName = "Hepsiburada";
     shopId = "hepsiburada";
 
@@ -25,24 +26,26 @@ class Hepsiburada extends Shop {
                 priceElement = e.querySelector('.price.product-price');
             }
 
-            let price = priceElement.textContent.replace(/[^0-9.,]/g, '');
-            let currency = priceElement.textContent.replace(/[^TLRY]/g, '');
+            let price = (priceElement || {textContent: ''}).textContent.replace(/[^0-9.,]/g, '');
+            let currency = (priceElement || {textContent: ''}).textContent.replace(/[^TLRY]/g, '');
 
             let oldPrices = [];
 
             oldPricesElements.forEach(function (element) {
-                oldPrices.push(element.textContent.replace(/[^0-9.,]/g, ''))
+                oldPrices.push((element || {textContent: ''}).textContent.replace(/[^0-9.,]/g, ''))
             });
 
-            data.push({
-                id, name, price, url, oldPrices, image, currency
-            });
+            if (price && currency && name && url && image) {
+                data.push({
+                    id, name, price, url, oldPrices, image, currency
+                });
+            }
         });
 
         return data;
     }
 
-    async getProductsFromCategoryPage(url: string, page: Page): Promise<ShopProduct[]> {
+    async getProductsFromCategoryPage(url: string, page: Page): Promise<IShopProduct[]> {
         await page.goto(url);
 
         let data = await page.evaluate(this.getProductsEvaluate);
@@ -53,11 +56,11 @@ class Hepsiburada extends Shop {
             });
         });
 
-        for (let pageLink of pagesLinks) {
-            await page.goto(pageLink);
+        for (let i = 0; i < pagesLinks.length; i++) {
+            await page.goto(pagesLinks[i]);
             let products = await page.evaluate(this.getProductsEvaluate);
-            console.log(products);
-            data.concat(products);
+            data = data.concat(products);
+            catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
         }
 
         return this.arrayToProductList(data);

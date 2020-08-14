@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
-import ShopProduct from '../models/ShopProduct';
 import ShopCategory, { IShopCategory } from '../models/ShopCategory';
-import { catDatabaseService, catCategoryProd } from '../LogConfig';
+import ShopProduct, { IShopProduct } from '../models/ShopProduct';
+import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfig';
 
 abstract class Shop {
     abstract shopId: string;
@@ -15,7 +15,7 @@ abstract class Shop {
      * @param url Gidilecek olan url
      * @param page Puppeteer sayfası
      */
-    abstract async getProductsFromCategoryPage(url: string, page: Page): Promise<ShopProduct[]>;
+    abstract async getProductsFromCategoryPage(url: string, page: Page): Promise<IShopProduct[]>;
 
     /**
      * Marketin anasayfasına giderek tüm kategorilerini çeker.
@@ -51,13 +51,59 @@ abstract class Shop {
     };
 
     /**
+     * Gelen ürünleri veritabanına kaydeder. Varsa günceller.
+     * 
+     * @param products Ürünler.
+     */
+    async updateAndCreateProducts(products: IShopProduct[], categoryId: string) {
+        for (let product of products) {
+            let doc = await ShopProduct.findOne({ id: product.id });
+
+            if (doc) {
+                await ShopProduct.findOneAndUpdate({ id: product.id }, {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    oldPrices: product.oldPrices,
+                    currency: product.currency,
+                    image: product.image,
+                    url: product.url,
+                    shopId: product.shopId,
+                    categoryId: categoryId
+                });
+
+                catDatabaseService.info(() => `Successfull: Product '${product.name}' updated Shop: ${this.shopId}`);
+            } else {
+                product.categoryId = categoryId;
+                await product.save();
+
+                catDatabaseService.info(() => `Successfull: Product '${product.name}' saved Shop: ${this.shopId}`);
+            }
+        }
+    };
+
+    /**
+     * Marketin tüm kategorilerini çeker.
+     */
+    async getCategoriesFromDatabase(): Promise<IShopCategory[]> {
+        return await ShopCategory.find({ shopId: this.shopId});
+    }
+
+    /**
+     * Marketin tüm ürünlerini çeker.
+     */
+    async getProductsFromDatabase(): Promise<IShopProduct[]> {
+        return await ShopProduct.find({ shopId: this.shopId});
+    }
+
+    /**
      * Liste olarak verilmiş bir datayı ShopProduct
      * objelernini bulunduğu bir listeye çevirir.
      * 
      * @param data Ürünlerin listesi
      */
-    arrayToProductList(data: Array<any>): ShopProduct[] {
-        let products: ShopProduct[] = [];
+    arrayToProductList(data: Array<any>): IShopProduct[] {
+        let products: IShopProduct[] = [];
 
         data.forEach(e => {
             let product = new ShopProduct();
@@ -73,6 +119,8 @@ abstract class Shop {
 
             products.push(product);
         });
+
+        catProductProd.info(() => `Successfull: Array to Product List | Shop: ${this.shopId}`);
 
         return products;
     }
