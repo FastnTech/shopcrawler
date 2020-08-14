@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
 import Shop from '../abstract/Shop';
 import ShopProduct from '../models/ShopProduct';
-import ShopCategory, { IShopCategory } from '../models/ShopCategory';
+import { IShopCategory } from '../models/ShopCategory';
 
 class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com/";

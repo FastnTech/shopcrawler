@@ -17,6 +17,7 @@
     "mongoose": "^5.10.0",
     "puppeteer": "^5.2.1",
     "tslib": "^2.0.1",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "typescript-logging": "^1.0.0"
   }
 }

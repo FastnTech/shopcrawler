@@ -14,4 +14,6 @@ import './database';
 
     //let products = await hepsi.getProductsFromCategoryPage("https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98", page);
 
+    page.close();
+    browserManager.destroyBrowser();
 })();

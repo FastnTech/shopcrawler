@@ -1,7 +1,7 @@
 import { Page } from 'puppeteer';
 import ShopProduct from '../models/ShopProduct';
 import ShopCategory, { IShopCategory } from '../models/ShopCategory';
-import * as mongoose from "mongoose";
+import { catDatabaseService, catCategoryProd } from '../LogConfig';
 
 abstract class Shop {
     abstract shopId: string;
@@ -40,8 +40,12 @@ abstract class Shop {
                     url: category.url,
                     shopId: category.shopId
                 });
+
+                catDatabaseService.info(() => `Successfull: Category '${category.name}' updated Shop: ${this.shopId}`);
             } else {
                 category.save();
+
+                catDatabaseService.info(() => `Successfull: Category '${category.name}' saved Shop: ${this.shopId}`);
             }
         }
     };
@@ -92,6 +96,8 @@ abstract class Shop {
 
             categories.push(category);
         });
+
+        catCategoryProd.info(() => `Successfull: Array to Category List | Shop: ${this.shopId}`);
 
         return categories;
     }
