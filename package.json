@@ -1,0 +1,22 @@
+{
+  "name": "crawl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npx tsc --importHelpers",
+    "watch:build": "tsc --watch",
+    "run": "node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongoose": "^5.7.36",
+    "@types/puppeteer": "^3.0.1",
+    "mongoose": "^5.10.0",
+    "puppeteer": "^5.2.1",
+    "tslib": "^2.0.1",
+    "typescript": "^3.9.7"
+  }
+}
