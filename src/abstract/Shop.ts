@@ -139,8 +139,8 @@ abstract class Shop {
 
             category.id = e.id;
             category.name = e.name;
-            category.url = this.shopUrl + e.url;
             category.shopId = this.shopId;
+            category.url = e.url;
 
             categories.push(category);
         });
