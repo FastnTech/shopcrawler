@@ -10,6 +10,7 @@ export interface IShopProduct extends mongoose.Document {
     url: string;
     shopId: string;
     categoryId: string;
+    subProducts: string[];
 }
 
 export const ShopProductScheme = new mongoose.Schema({
@@ -21,7 +22,8 @@ export const ShopProductScheme = new mongoose.Schema({
     image: { type: String, required: true },
     url: { type: String, required: true },
     shopId: { type: String, required: true },
-    categoryId: { type: String, required: true }
+    categoryId: { type: String, required: true },
+    subProducts: { type: Array, required: false }
 });
 
 const ShopProduct = mongoose.model<IShopProduct>("ShopProduct", ShopProductScheme);

@@ -25,6 +25,13 @@ abstract class Shop {
     abstract async getCategoriesFromMainPage(page: Page): Promise<IShopCategory[]>;
 
     /**
+     * İlişkili ürünü aratır ve çıkan sonuçları kayıt eder.
+     * 
+     * @param page Puppeteer sayfası.
+     */
+    abstract async getRelatedProductsFromSearching(name: string, page: Page): Promise<IShopProduct[]>;
+
+    /**
      * Gelen kategorileri veritabanına kaydeder. Varsa günceller.
      * 
      * @param categories Kategoriler.
@@ -120,7 +127,7 @@ abstract class Shop {
             products.push(product);
         });
 
-        catProductProd.info(() => `Successfull: Array to Product List | Shop: ${this.shopId}`);
+        catProductProd.info(() => `Successfull: Array to Product List | Shop: ${this.shopId} | Product Count: ${products.length}`);
 
         return products;
     }

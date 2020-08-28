@@ -10,7 +10,12 @@ class n11 extends Shop {
     shopId = "n11";
 
     getProductsEvaluate () {
-        let products = document.querySelectorAll('.catalogView ul li');
+        let products = document.querySelectorAll('.group.listingGroup.resultListGroup.import-search-view .catalogView ul li');
+
+        if (products) {
+            products = document.querySelectorAll('.group.listingGroup.resultListGroup.import-search-view .listView ul li');
+        }
+
         let data = [];
 
         products.forEach(function (e) {
@@ -100,6 +105,38 @@ class n11 extends Shop {
         });
 
         return this.arrayToCategoryList(data);
+    }
+
+    async getRelatedProductsFromSearching(name: string, page: Page): Promise<IShopProduct[]> {
+        let data = [];
+
+        try {
+            catCategoryProd.info(() => `Search started with: ${name.slice(0, 50)};`);
+            await page.goto("https://www.n11.com/arama?q=" + encodeURIComponent(name.slice(0, 50)));
+
+            data = await page.evaluate(this.getProductsEvaluate);
+
+            catCategoryProd.info(() => `First data: ${data.length};`);
+
+            if (data.length > 0) {
+                let pagesLinks = await page.evaluate(() => {
+                    return Object.values(document.querySelectorAll('.pagination a')).map(a => { 
+                        return a.getAttribute('href'); 
+                    });
+                });
+    
+                for (let i = 0; i < pagesLinks.length; i++) {
+                    await page.goto(pagesLinks[i]);
+                    let products = await page.evaluate(this.getProductsEvaluate);
+                    data = data.concat(products);
+                    catCategoryProd.info(() => `Getting products in search; Page: ${i + 1}; Products: ${products.length}; Shop: ${this.shopId};`);
+                }
+            }
+        } catch (err) {
+            catCategoryProd.info(() => `An error occurred on page; Shop: ${this.shopId};`);
+        }
+
+        return this.arrayToProductList(data);
     }
 }
 

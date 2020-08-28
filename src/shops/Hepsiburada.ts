@@ -105,6 +105,10 @@ class Hepsiburada extends Shop {
 
         return this.arrayToCategoryList(data);
     }
+
+    getRelatedProductsFromSearching(string: string, page: Page): Promise<IShopProduct[]> {
+        throw new Error('Method not implemented.');
+    }
 }
 
 export default Hepsiburada;
