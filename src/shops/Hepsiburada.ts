@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer';
+import { Page, Product } from 'puppeteer';
 import Shop from '../abstract/Shop';
 import { IShopCategory } from '../models/ShopCategory';
 import { IShopProduct } from '../models/ShopProduct';
@@ -104,6 +104,16 @@ class Hepsiburada extends Shop {
         });
 
         return this.arrayToCategoryList(data);
+    }
+
+    async getProductDetailFromProductPage(url: string, page: Page) : Promise<IShopProduct> {
+        await page.goto(url);
+
+        let data = await page.evaluate(() => {
+
+        });
+
+        return this.objectToProduct(data);
     }
 
     getRelatedProductsFromSearching(string: string, page: Page): Promise<IShopProduct[]> {

@@ -32,6 +32,14 @@ abstract class Shop {
     abstract async getRelatedProductsFromSearching(name: string, page: Page): Promise<IShopProduct[]>;
 
     /**
+     * Ürün detay sayfasından ürünün detaylarını alır ve geri döner.
+     * 
+     * @param url Gidilecek olan ürün URL'i
+     * @param page Puppeteer sayfası
+     */
+    abstract async getProductDetailFromProductPage(url: string, page: Page) : Promise<IShopProduct>;
+
+    /**
      * Gelen kategorileri veritabanına kaydeder. Varsa günceller.
      * 
      * @param categories Kategoriler.
@@ -104,8 +112,36 @@ abstract class Shop {
     }
 
     /**
+     * Verilen type sız ürün objesini ShopProduct objesine çevirir.
+     * 
+     * @param data Ürün objesi
+     */
+    objectToProduct(data: any): IShopProduct {
+        let product: IShopProduct = new ShopProduct();
+
+        if (!product.id)
+            return product;
+
+        product.id = data['id'] || '';
+        product.name = data['name'] || '';
+        product.price = data['price'] || 0;
+        product.currency = data['currency'] || '';
+        product.oldPrices = data['oldPrices'] || [];
+        product.url = data['url'] || '';
+        product.image = data['image'] || '';
+        product.shopId = data['shopId'] || '';
+        product.subProducts = data['subProducts'] || [];
+        product.dealerName = data['dealerName'] || '';
+        product.stock = data['stock'] || '';
+        product.dealerPoint = data['dealerPoint'] || '';
+        product.attributes = data['attributes'] || {};
+
+        return product;
+    }
+
+    /**
      * Liste olarak verilmiş bir datayı ShopProduct
-     * objelernini bulunduğu bir listeye çevirir.
+     * objelerinin bulunduğu bir listeye çevirir.
      * 
      * @param data Ürünlerin listesi
      */
