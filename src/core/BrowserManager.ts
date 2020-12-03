@@ -7,7 +7,7 @@ class BrowserManager {
     async startBrowser(): Promise<Browser> {
         if (!this.browser) {
             this.browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 defaultViewport: {
                     width: 1920,
                     height: 1080

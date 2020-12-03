@@ -1,7 +1,9 @@
 import { Page } from 'puppeteer';
-import ShopCategory, { IShopCategory } from '../models/ShopCategory';
-import ShopProduct, { IShopProduct } from '../models/ShopProduct';
+import ShopCategory, { IShopCategory } from '../entities/ShopCategory';
+import ShopProduct, { IShopProduct } from '../entities/ShopProduct';
 import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfig';
+import {IProduct} from "../interfaces/IProduct";
+import {Product} from "../models/Product";
 
 abstract class Shop {
     abstract shopId: string;
@@ -15,7 +17,7 @@ abstract class Shop {
      * @param url Gidilecek olan url
      * @param page Puppeteer sayfası
      */
-    abstract async getProductsFromCategoryPage(url: string, page: Page): Promise<IShopProduct[]>;
+    abstract async getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]>;
 
     /**
      * Marketin anasayfasına giderek tüm kategorilerini çeker.
@@ -29,7 +31,7 @@ abstract class Shop {
      * 
      * @param page Puppeteer sayfası.
      */
-    abstract async getRelatedProductsFromSearching(name: string, page: Page): Promise<IShopProduct[]>;
+    abstract async getRelatedProductsFromSearching(name: string, page: Page): Promise<IProduct[]>;
 
     /**
      * Ürün detay sayfasından ürünün detaylarını alır ve geri döner.
@@ -37,7 +39,7 @@ abstract class Shop {
      * @param url Gidilecek olan ürün URL'i
      * @param page Puppeteer sayfası
      */
-    abstract async getProductDetailFromProductPage(url: string, page: Page) : Promise<IShopProduct>;
+    abstract async getProductDetailFromProductPage(url: string, category: string, page: Page) : Promise<IProduct>;
 
     /**
      * Gelen kategorileri veritabanına kaydeder. Varsa günceller.
@@ -70,28 +72,28 @@ abstract class Shop {
      * 
      * @param products Ürünler.
      */
-    async updateAndCreateProducts(products: IShopProduct[], categoryId: string) {
+    async updateAndCreateProducts(products: IProduct[]) {
         for (let product of products) {
-            let doc = await ShopProduct.findOne({ id: product.id });
+            let filter = { "subProducts": { $elemMatch: { id: product.id }}};
+            let doc = await ShopProduct.findOne(filter);
 
             if (doc) {
-                await ShopProduct.findOneAndUpdate({ id: product.id }, {
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    oldPrices: product.oldPrices,
-                    currency: product.currency,
-                    image: product.image,
-                    url: product.url,
-                    shopId: product.shopId,
-                    categoryId: categoryId
+                let index: number = 0;
+                let productFilter = doc.subProducts.filter((_product: IProduct, _index: number) => {
+                    index = _index;
+                    return product.id === _product.id;
                 });
 
-                catDatabaseService.info(() => `Successfull: Product '${product.name}' updated Shop: ${this.shopId}`);
+                if (productFilter.length > 0) {
+                    doc.subProducts[index] = product;
+                    await ShopProduct.findOneAndUpdate(filter, doc);
+                    catDatabaseService.info(() => `Successfull: Product '${product.name}' updated Shop: ${this.shopId}`);
+                } else {
+                    await this.createShopProductFromProduct(product).save();
+                    catDatabaseService.info(() => `Successfull: Product '${product.name}' saved Shop: ${this.shopId}`);
+                }
             } else {
-                product.categoryId = categoryId;
-                await product.save();
-
+                await this.createShopProductFromProduct(product).save();
                 catDatabaseService.info(() => `Successfull: Product '${product.name}' saved Shop: ${this.shopId}`);
             }
         }
@@ -116,25 +118,28 @@ abstract class Shop {
      * 
      * @param data Ürün objesi
      */
-    objectToProduct(data: any): IShopProduct {
-        let product: IShopProduct = new ShopProduct();
+    objectToProduct(data: any): IProduct {
+        let product: IProduct = new Product();
 
-        if (!product.id)
+        if (data["id"] == null) {
             return product;
+        }
 
         product.id = data['id'] || '';
         product.name = data['name'] || '';
         product.price = data['price'] || 0;
-        product.currency = data['currency'] || '';
-        product.oldPrices = data['oldPrices'] || [];
+        product.originalPrice = data['originalPrice'] || [];
         product.url = data['url'] || '';
         product.image = data['image'] || '';
-        product.shopId = data['shopId'] || '';
-        product.subProducts = data['subProducts'] || [];
-        product.dealerName = data['dealerName'] || '';
-        product.stock = data['stock'] || '';
-        product.dealerPoint = data['dealerPoint'] || '';
+        product.shopId = this.shopId;
         product.attributes = data['attributes'] || {};
+        product.categories = data['categories'] || [];
+        product.dealerName = data['dealerName'] || '';
+        product.dealerPoint = data['dealerPoint'] || '';
+        product.shipping = data['shipping'] || '';
+        product.commentCount = data['commentCount'] || '';
+        product.mainId = data['brand'] || '';
+        product.brand = data['brand'] || '';
 
         return product;
     }
@@ -145,17 +150,16 @@ abstract class Shop {
      * 
      * @param data Ürünlerin listesi
      */
-    arrayToProductList(data: Array<any>): IShopProduct[] {
-        let products: IShopProduct[] = [];
+    arrayToProductList(data: Array<any>): IProduct[] {
+        let products: IProduct[] = [];
 
         data.forEach(e => {
-            let product = new ShopProduct();
+            let product = new Product();
 
             product.id = e.id;
             product.name = e.name;
             product.price = e.price;
-            product.currency = e.currency;
-            product.oldPrices = e.oldPrices;
+            product.originalPrice = e.originalPrice;
             product.url = e.url;
             product.image = e.image;
             product.shopId = this.shopId;
@@ -191,6 +195,48 @@ abstract class Shop {
         catCategoryProd.info(() => `Successfull: Array to Category List | Shop: ${this.shopId}`);
 
         return categories;
+    }
+
+    /**
+     * Tekil ürünü ShopProduct objesine çevirir
+     *
+     * @param data Ürününü ilk subproduct ı
+     */
+    createShopProductFromProduct(data: IProduct): IShopProduct {
+        let shopProduct: IShopProduct = new ShopProduct();
+
+        data.mainId = data.id;
+
+        shopProduct.image = data.image;
+        shopProduct.slug = this.slugify(data.name);
+        shopProduct.id = data.id;
+        shopProduct.name = data.name;
+        shopProduct.subProducts.push(data);
+
+        return shopProduct;
+    }
+
+    /**
+     *
+     * @param text Çevirilecek metin
+     */
+    slugify = function(text) {
+        var trMap = {
+            'çÇ':'c',
+            'ğĞ':'g',
+            'şŞ':'s',
+            'üÜ':'u',
+            'ıİ':'i',
+            'öÖ':'o'
+        };
+        for(var key in trMap) {
+            text = text.replace(new RegExp('['+key+']','g'), trMap[key]);
+        }
+        return  text.replace(/[^-a-zA-Z0-9\s]+/ig, '') // remove non-alphanumeric chars
+            .replace(/\s/gi, "-") // convert spaces to dashes
+            .replace(/[-]+/gi, "-") // trim repeated dashes
+            .toLowerCase();
+
     }
 }
 

@@ -1,8 +1,9 @@
 import { Page, Product } from 'puppeteer';
 import Shop from '../abstract/Shop';
-import { IShopCategory } from '../models/ShopCategory';
-import { IShopProduct } from '../models/ShopProduct';
+import { IShopCategory } from '../entities/ShopCategory';
+import { IShopProduct } from '../entities/ShopProduct';
 import { catCategoryProd } from '../LogConfig';
+import {IProduct} from "../interfaces/IProduct";
 
 class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com";
@@ -45,23 +46,23 @@ class Hepsiburada extends Shop {
         return data;
     }
 
-    async getProductsFromCategoryPage(url: string, page: Page): Promise<IShopProduct[]> {
+    async getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]> {
         await page.goto(url);
 
         let data = await page.evaluate(this.getProductsEvaluate);
 
-        let pagesLinks = await page.evaluate(() => {
-            return Object.values(document.querySelectorAll('#pagination a')).map(a => { 
-                return window.location.protocol + a.getAttribute('href'); 
-            });
-        });
-
-        for (let i = 0; i < pagesLinks.length; i++) {
-            await page.goto(pagesLinks[i]);
-            let products = await page.evaluate(this.getProductsEvaluate);
-            data = data.concat(products);
-            catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
-        }
+        // let pagesLinks = await page.evaluate(() => {
+        //     return Object.values(document.querySelectorAll('#pagination a')).map(a => {
+        //         return window.location.protocol + a.getAttribute('href');
+        //     });
+        // });
+        //
+        // for (let i = 0; i < pagesLinks.length; i++) {
+        //     await page.goto(pagesLinks[i]);
+        //     let products = await page.evaluate(this.getProductsEvaluate);
+        //     data = data.concat(products);
+        //     catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
+        // }
 
         return this.arrayToProductList(data);
     }
@@ -106,17 +107,64 @@ class Hepsiburada extends Shop {
         return this.arrayToCategoryList(data);
     }
 
-    async getProductDetailFromProductPage(url: string, page: Page) : Promise<IShopProduct> {
+    async getProductDetailFromProductPage(url: string, category: string, page: Page) : Promise<IProduct> {
         await page.goto(url);
 
         let data = await page.evaluate(() => {
+            //stock check
+            if (document.querySelector('.product-detail-box[style="display: none"]') === null) {
+                return;
+            }
 
+            let id = document.querySelector('[itemprop="sku"]').getAttribute('content');
+            let productName = document.getElementById('product-name').textContent.trim();
+            let price = document.querySelector('[id="offering-price"]').textContent.replace(/[^0-9.,]/g, '');
+            let originalPrice = document.querySelector('[id="originalPrice"]').textContent.replace(/[^0-9.,]/g, '');
+            let dealerName = document.querySelector('.seller-container .seller a').textContent;
+            let dealerPoint = document.querySelector('.merchant-rating').textContent;
+            let shipping = document.querySelector('[data-bind="html: timerForShipment.dueText"]').textContent;
+            let comments = document.querySelector('#productReviewsTab').textContent.replace(/[^0-9]/g, '');
+            let brand = document.querySelector('.brand-name').textContent.trim();
+            let image = document.querySelector('img.product-image').getAttribute('src');
+            let attributes = [];
+
+            document.querySelectorAll('[class="data-list tech-spec"] tr').forEach((e) => {
+                attributes.push({
+                    "attributeName": e.querySelector('th').textContent,
+                    "attributeValue": e.querySelector('td').textContent
+                });
+            });
+
+            return {
+                id: id,
+                name: productName,
+                price: price,
+                originalPrice: originalPrice,
+                image: image,
+                url: window.location.href,
+                categories: [],
+                attributes: attributes,
+                commentCount: comments,
+                dealerName: dealerName,
+                dealerPoint: dealerPoint,
+                shipping: shipping,
+                brand: brand,
+                shopId: '',
+                mainId: id
+            }
         });
+
+        if (data) {
+            data.categories = [
+                category,
+                category + ' ' + data.brand
+            ];
+        }
 
         return this.objectToProduct(data);
     }
 
-    getRelatedProductsFromSearching(string: string, page: Page): Promise<IShopProduct[]> {
+    getRelatedProductsFromSearching(string: string, page: Page): Promise<IProduct[]> {
         throw new Error('Method not implemented.');
     }
 }

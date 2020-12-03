@@ -1,7 +1,8 @@
 import BrowserManager from "./core/BrowserManager";
 import Hepsiburada from './shops/Hepsiburada';
-import n11 from './shops/n11';
 import './database';
+import {IProduct} from "./interfaces/IProduct";
+import ShopProduct from "./entities/ShopProduct";
 
 (async () => {
     let browserManager: BrowserManager = new BrowserManager();
@@ -9,52 +10,17 @@ import './database';
     let browser = await browserManager.startBrowser();
     let page = await browser.newPage();
 
-    //let hepsi = new Hepsiburada();
-    // let categories = await hepsi.getCategoriesFromMainPage(page);
-    // await hepsi.updateAndCreateCategories(categories);
-
-    // let categories = await hepsi.getCategoriesFromDatabase();
-
-    // for (let category of categories) {
-    //     let products = await hepsi.getProductsFromCategoryPage(category.url, page);
-
-    //     await hepsi.updateAndCreateProducts(products, category.id);
-    // }
-
-
-    // let categories = await n11shop.getCategoriesFromMainPage(page);
-    // await n11shop.updateAndCreateCategories(categories);
-    //---------------------------------------
-    // let n11shop = new n11();
-
-    // let categories = await n11shop.getCategoriesFromDatabase();
-
-    // for (let category of categories) {
-    //     let products = await n11shop.getProductsFromCategoryPage(category.url, page);
-
-    //     await n11shop.updateAndCreateProducts(products, category.id);
-    // }
-
     let hepsi = new Hepsiburada();
-    let nonbir = new n11();
-    let hepsiProducts = await hepsi.getProductsFromDatabase();
 
-    for (let hepsiProduct of hepsiProducts) {
-        let products = await nonbir.getRelatedProductsFromSearching(hepsiProduct.name, page);
+    let categoryPageUri = 'https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98';
+    let products: IProduct[] = await hepsi.getProductsFromCategoryPage(categoryPageUri, page);
 
-        if (products.length > 0) {
-            let ids = products.map((p) => { return p.id; });
+    for (let product of products) {
+        let _product: IProduct = await hepsi.getProductDetailFromProductPage(product.url, "Laptop", page);
 
-            if (hepsiProduct.subProducts) {
-                hepsiProduct.subProducts = hepsiProduct.subProducts.concat(ids);
-            } else {
-                hepsiProduct.subProducts = ids;
-            }
-
-            await hepsiProduct.save();
+        if (product.id != "") {
+            hepsi.updateAndCreateProducts([_product]);
         }
-
-        await nonbir.updateAndCreateProducts(products, hepsiProduct.categoryId);
     }
 
     console.log("Finish");
