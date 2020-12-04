@@ -31,7 +31,7 @@ abstract class Shop {
      * 
      * @param page Puppeteer sayfası.
      */
-    abstract async getRelatedProductsFromSearching(name: string, page: Page): Promise<IProduct[]>;
+    abstract async getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]>;
 
     /**
      * Ürün detay sayfasından ürünün detaylarını alır ve geri döner.
@@ -69,12 +69,13 @@ abstract class Shop {
 
     /**
      * Gelen ürünleri veritabanına kaydeder. Varsa günceller.
-     * 
+     *
      * @param products Ürünler.
+     * @param isMainProduct ana ürünler olup olmadığı
      */
-    async updateAndCreateProducts(products: IProduct[]) {
+    async updateAndCreateProducts(products: IProduct[], isMainProduct: boolean = false) {
         for (let product of products) {
-            let filter = { "subProducts": { $elemMatch: { id: product.id }}};
+            let filter = isMainProduct ? { "subProducts": { $elemMatch: { id: product.id }}} : { "id": product.mainId };
             let doc = await ShopProduct.findOne(filter);
 
             if (doc) {
@@ -88,7 +89,13 @@ abstract class Shop {
                     doc.subProducts[index] = product;
                     await ShopProduct.findOneAndUpdate(filter, doc);
                     catDatabaseService.info(() => `Successfull: Product '${product.name}' updated Shop: ${this.shopId}`);
-                } else {
+                }
+                else if (!isMainProduct) {
+                    doc.subProducts.push(product);
+                    await ShopProduct.findOneAndUpdate(filter, doc);
+                    catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
+                }
+                else {
                     await this.createShopProductFromProduct(product).save();
                     catDatabaseService.info(() => `Successfull: Product '${product.name}' saved Shop: ${this.shopId}`);
                 }
@@ -114,6 +121,13 @@ abstract class Shop {
     }
 
     /**
+     * Tüm ürünleri çeker.
+     */
+    async getAllProductsFromDatabase(): Promise<IShopProduct[]> {
+        return ShopProduct.find();
+    }
+
+    /**
      * Verilen type sız ürün objesini ShopProduct objesine çevirir.
      * 
      * @param data Ürün objesi
@@ -121,7 +135,7 @@ abstract class Shop {
     objectToProduct(data: any): IProduct {
         let product: IProduct = new Product();
 
-        if (data["id"] == null) {
+        if (typeof data === "undefined") {
             return product;
         }
 
@@ -138,7 +152,7 @@ abstract class Shop {
         product.dealerPoint = data['dealerPoint'] || '';
         product.shipping = data['shipping'] || '';
         product.commentCount = data['commentCount'] || '';
-        product.mainId = data['brand'] || '';
+        product.mainId = data['mainId'] || '';
         product.brand = data['brand'] || '';
 
         return product;

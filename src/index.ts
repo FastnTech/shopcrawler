@@ -1,8 +1,9 @@
 import BrowserManager from "./core/BrowserManager";
 import Hepsiburada from './shops/Hepsiburada';
+import n11 from './shops/n11';
 import './database';
 import {IProduct} from "./interfaces/IProduct";
-import ShopProduct from "./entities/ShopProduct";
+import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
 
 (async () => {
     let browserManager: BrowserManager = new BrowserManager();
@@ -11,15 +12,17 @@ import ShopProduct from "./entities/ShopProduct";
     let page = await browser.newPage();
 
     let hepsi = new Hepsiburada();
+    let nonbir = new n11();
 
     let categoryPageUri = 'https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98';
-    let products: IProduct[] = await hepsi.getProductsFromCategoryPage(categoryPageUri, page);
+    let shopProducts: IShopProduct[] = await hepsi.getAllProductsFromDatabase();
 
-    for (let product of products) {
-        let _product: IProduct = await hepsi.getProductDetailFromProductPage(product.url, "Laptop", page);
+    for (let shopProduct of shopProducts) {
+        let _product: IProduct[] = await nonbir.getRelatedProductsFromSearching(shopProduct.name, "Laptop", page);
 
-        if (product.id != "") {
-            hepsi.updateAndCreateProducts([_product]);
+        if (_product && _product[0].id !== "") {
+            _product[0].mainId = shopProduct.id;
+            await nonbir.updateAndCreateProducts(_product);
         }
     }
 
