@@ -129,9 +129,52 @@ class Hepsiburada extends Shop {
             let attributes = [];
 
             document.querySelectorAll('[class="data-list tech-spec"] tr').forEach((e) => {
+                let attrName = e.querySelector('th').textContent;
+                let attrValue = e.querySelector('td').textContent;
+
+                if (attrName === "Bellek Hızı") {
+                    attrName = "RAM Hızı";
+                    attrValue = attrValue.replace(/[^0-9]/g, '') + " MHZ";
+                }
+
+                if (attrName === "Ekran Kartı Hafızası") {
+                    attrName = "Ekran Kartı Hafızası";
+                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                }
+
+                if (attrName === "Ram (Sistem Belleği)") {
+                    attrName = "RAM";
+                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                }
+
+                if (attrName === "SSD Kapasitesi") {
+                    attrName = "SSD";
+                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                }
+
+                if (attrName === "Harddisk Kapasitesi") {
+                    attrName = "HDD";
+                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                }
+
+                if (attrName === "İşlemci") {
+                    attrName = "İşlemci Model";
+                    attrValue = attrValue.toLocaleUpperCase();
+                }
+
+                if (attrName === "İşlemci Tipi") {
+                    attrName = "İşlemci";
+                    attrValue = attrValue.toLocaleUpperCase();
+                }
+
+                if (attrName === "Ekran Boyutu") {
+                    attrName = "Ekran Boyutu";
+                    attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                }
+
                 attributes.push({
-                    "attributeName": e.querySelector('th').textContent,
-                    "attributeValue": e.querySelector('td').textContent
+                    "attributeName": attrName,
+                    "attributeValue": attrValue
                 });
             });
 

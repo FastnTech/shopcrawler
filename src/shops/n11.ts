@@ -97,9 +97,47 @@ class n11 extends Shop {
             let attributes = [];
 
             document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
+                let attrName = e.querySelector('.label').textContent.trim();
+                let attrValue = e.querySelector('.data').textContent.trim();
+
+                if (attrName === "Ekran Kartı Belleği") {
+                    attrName = "Ekran Kartı Hafızası";
+                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                }
+
+                if (attrName === "Sistem Belleği (Gb)") {
+                    attrName = "RAM";
+                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                }
+
+                if (attrName === "SSD") {
+                    attrName = "SSD";
+                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                }
+
+                if (attrName === "Disk Kapasitesi") {
+                    attrName = "HDD";
+                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                }
+
+                if (attrName === "İşlemci") {
+                    attrName = "İşlemci";
+                    attrValue = attrValue.toLocaleUpperCase();
+                }
+
+                if (attrName === "İşlemci Modeli") {
+                    attrName = "İşlemci Model";
+                    attrValue = attrValue.toLocaleUpperCase();
+                }
+
+                if (attrName === "Ekran Boyutu") {
+                    attrName = "Ekran Boyutu";
+                    attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                }
+
                 attributes.push({
-                    "attributeName": e.querySelector('.label').textContent.trim(),
-                    "attributeValue": e.querySelector('.data').textContent.trim()
+                    "attributeName": attrName,
+                    "attributeValue": attrValue
                 });
             });
 
