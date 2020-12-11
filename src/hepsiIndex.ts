@@ -1,9 +1,7 @@
 import BrowserManager from "./core/BrowserManager";
 import Hepsiburada from './shops/Hepsiburada';
-import n11 from './shops/n11';
 import './database';
 import {IProduct} from "./interfaces/IProduct";
-import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
 
 (async () => {
     let browserManager: BrowserManager = new BrowserManager();
