@@ -14,15 +14,16 @@ import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
     let hepsi = new Hepsiburada();
     let nonbir = new n11();
 
-    let categoryPageUri = 'https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98';
     let shopProducts: IShopProduct[] = await hepsi.getAllProductsFromDatabase();
 
     for (let shopProduct of shopProducts) {
-        let _product: IProduct[] = await nonbir.getRelatedProductsFromSearching(shopProduct.name, "Laptop", page);
+        let _products: IProduct[] = await nonbir.getRelatedProductsFromSearching(shopProduct.name, "Laptop", page);
 
-        if (_product && _product[0].id !== "") {
-            _product[0].mainId = shopProduct.id;
-            await nonbir.updateAndCreateProducts(_product);
+        for (let product of _products) {
+            if (product && typeof product["id"] !== "undefined" && product["id"] !== "") {
+                product.mainId = shopProduct.id;
+                await nonbir.updateAndCreateProducts([product]);
+            }
         }
     }
 

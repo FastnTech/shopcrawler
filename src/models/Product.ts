@@ -1,7 +1,7 @@
 import {IProduct} from "../interfaces/IProduct";
 
 export class Product implements IProduct {
-    attributes: object;
+    attributes: object[];
     categories: string[];
     commentCount: string;
     dealerName: string;

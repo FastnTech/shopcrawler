@@ -7,7 +7,7 @@ export interface IProduct {
     originalPrice: string;
     image: string;
     categories: string[];
-    attributes: object;
+    attributes: object[];
     shopId: string;
     dealerName: string;
     dealerPoint: string;

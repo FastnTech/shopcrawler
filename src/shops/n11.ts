@@ -57,7 +57,7 @@ class n11 extends Shop {
         let data = [];
 
         try {
-            await page.goto(url);
+            await page.goto(url, {waitUntil: 'load', timeout: 0});
 
             data = await page.evaluate(this.getProductsEvaluate);
 
@@ -68,7 +68,7 @@ class n11 extends Shop {
             });
 
             for (let i = 0; i < pagesLinks.length; i++) {
-                await page.goto(pagesLinks[i]);
+                await page.goto(pagesLinks[i], {waitUntil: 'load', timeout: 0});
                 let products = await page.evaluate(this.getProductsEvaluate);
                 data = data.concat(products);
                 catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Products: ${products.length}; Shop: ${this.shopId};`);
@@ -81,7 +81,9 @@ class n11 extends Shop {
     }
 
     async getProductDetailFromProductPage(url: string, category: string, page: Page): Promise<IProduct> {
-        await page.goto(url);
+        await page.goto(url, {waitUntil: 'load', timeout: 0});
+
+        await this.sleep(1500);
 
         let data = await page.evaluate(() => {
             let id = document.querySelector('[name="skuId"]').getAttribute('value');
@@ -172,23 +174,34 @@ class n11 extends Shop {
 
     async getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]> {
         let newName: string = name.split(' ').slice(0, 5).join('+');
-        await page.goto("https://www.n11.com/arama?q=" + encodeURIComponent(newName));
+        await page.goto("https://www.n11.com/arama?q=" + encodeURIComponent(newName), {waitUntil: 'load', timeout: 0});
 
-        let productUrl = await page.evaluate(() => {
+        let productUrls: string[] = await page.evaluate(() => {
             if (document.querySelector('.result-mean-text-mm') !== null) {
-                return "";
+                return [];
             }
 
-            return document.querySelector('.resultListGroup .plink').getAttribute('href');
+            let links = [];
+
+            document.querySelectorAll('[id="view"].listView > ul > li').forEach(function (e) {
+                links.push(e.querySelector('.plink').getAttribute('href'));
+            });
+
+            return links;
         });
 
-        if (productUrl === "") {
-            return null;
+        let products = [];
+
+        for (let productUrl of productUrls) {
+            if (productUrl === "") {
+                return null;
+            }
+    
+            let product = await this.getProductDetailFromProductPage(productUrl, category, page);
+            products.push(product);
         }
 
-        let product = await this.getProductDetailFromProductPage(productUrl, category, page);
-
-        return [product];
+        return products;
     }
 
     async getCategoriesFromMainPage(page: Page): Promise<IShopCategory[]> {

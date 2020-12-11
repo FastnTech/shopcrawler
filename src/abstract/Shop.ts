@@ -91,9 +91,15 @@ abstract class Shop {
                     catDatabaseService.info(() => `Successfull: Product '${product.name}' updated Shop: ${this.shopId}`);
                 }
                 else if (!isMainProduct) {
-                    doc.subProducts.push(product);
-                    await ShopProduct.findOneAndUpdate(filter, doc);
-                    catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
+                    let firstSub: IProduct = doc.subProducts[0];
+
+                    if (this.checkAttrs(firstSub.attributes, product.attributes)) {
+                        doc.subProducts.push(product);
+                        await ShopProduct.findOneAndUpdate(filter, doc);
+                        catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
+                    } else {
+                        catDatabaseService.info(() => `Successfull: Adding failed product attributes not match`);
+                    }
                 }
                 else {
                     await this.createShopProductFromProduct(product).save();
@@ -125,6 +131,37 @@ abstract class Shop {
      */
     async getAllProductsFromDatabase(): Promise<IShopProduct[]> {
         return ShopProduct.find();
+    }
+
+    /**
+     * Ürün attributelerini alır ve kategorisine göre eşleştirme sağlar
+     * 
+     * @param attributes eklenecek olan ürünün detayları
+     * @param _attributes hali hazırda veritabanında olan ürünün detayları
+     */
+    checkAttrs(attributes: object[], _attributes: object[]): boolean {
+        let ramFilter = (e) => { return e["attributeName"] === "RAM" };
+        let screenSizeFilter = (e) => { return e["attributeName"] === "Ekran Boyutu" };
+        let ssdFilter = (e) => { return e["attributeName"] === "SSD" };
+        let hddFilter = (e) => { return e["attributeName"] === "HDD" };
+        let cpuFilter = (e) => { return e["attributeName"] === "İşlemci" };
+        let cpuModelFilter = (e) => { return e["attributeName"] === "İşlemci Model" };
+
+        let factory = (a, f) => { return typeof a.filter(f)[0] === "undefined" ? "" : a.filter(f)[0]["attributeValue"]; };
+
+        let result: boolean = false;
+
+        // Laptop
+        if (attributes.filter(ramFilter).length > 0 && attributes.filter(screenSizeFilter).length > 0) {
+            result = factory(attributes, ramFilter) === factory(_attributes, ramFilter) &&
+                factory(attributes, screenSizeFilter) === factory(_attributes, screenSizeFilter) &&
+                factory(attributes, ssdFilter) === factory(_attributes, ssdFilter) &&
+                factory(attributes, hddFilter) === factory(_attributes, hddFilter);
+        } else if (attributes.filter(ramFilter).length > 0) { // PC
+
+        }
+        
+        return result;
     }
 
     /**
@@ -251,6 +288,10 @@ abstract class Shop {
             .replace(/[-]+/gi, "-") // trim repeated dashes
             .toLowerCase();
 
+    }
+
+    sleep = function(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
