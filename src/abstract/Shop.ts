@@ -97,7 +97,7 @@ abstract class Shop {
 
                     if (this.checkAttrs(firstSub.attributes, product.attributes, product.categories[0])) {
                         doc.subProducts.push(product);
-                        //await ShopProduct.findOneAndUpdate(filter, doc);
+                        await ShopProduct.findOneAndUpdate(filter, doc);
                         catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
                     } else {
                         catDatabaseService.info(() => `Successfull: Adding failed product attributes not match`);
