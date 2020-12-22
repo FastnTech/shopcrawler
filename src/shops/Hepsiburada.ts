@@ -51,18 +51,18 @@ class Hepsiburada extends Shop {
 
         let data = await page.evaluate(this.getProductsEvaluate);
 
-        // let pagesLinks = await page.evaluate(() => {
-        //     return Object.values(document.querySelectorAll('#pagination a')).map(a => {
-        //         return window.location.protocol + a.getAttribute('href');
-        //     });
-        // });
-        //
-        // for (let i = 0; i < pagesLinks.length; i++) {
-        //     await page.goto(pagesLinks[i]);
-        //     let products = await page.evaluate(this.getProductsEvaluate);
-        //     data = data.concat(products);
-        //     catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
-        // }
+        let pagesLinks = await page.evaluate(() => {
+            return Object.values(document.querySelectorAll('#pagination a')).map(a => {
+                return window.location.protocol + a.getAttribute('href');
+            });
+        });
+
+        for (let i = 0; i < pagesLinks.length; i++) {
+            await page.goto(pagesLinks[i]);
+            let products = await page.evaluate(this.getProductsEvaluate);
+            data = data.concat(products);
+            catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
+        }
 
         return this.arrayToProductList(data);
     }

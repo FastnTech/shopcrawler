@@ -4,6 +4,7 @@ import ShopProduct, { IShopProduct } from '../entities/ShopProduct';
 import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfig';
 import {IProduct} from "../interfaces/IProduct";
 import {Product} from "../models/Product";
+import LaptopFilters from "../filters/LaptopFilters";
 
 abstract class Shop {
     abstract shopId: string;
@@ -17,21 +18,21 @@ abstract class Shop {
      * @param url Gidilecek olan url
      * @param page Puppeteer sayfası
      */
-    abstract async getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]>;
+    abstract getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]>;
 
     /**
      * Marketin anasayfasına giderek tüm kategorilerini çeker.
      * 
      * @param page Puppeteer sayfası.
      */
-    abstract async getCategoriesFromMainPage(page: Page): Promise<IShopCategory[]>;
+    abstract getCategoriesFromMainPage(page: Page): Promise<IShopCategory[]>;
 
     /**
      * İlişkili ürünü aratır ve çıkan sonuçları kayıt eder.
      * 
      * @param page Puppeteer sayfası.
      */
-    abstract async getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]>;
+    abstract getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]>;
 
     /**
      * Ürün detay sayfasından ürünün detaylarını alır ve geri döner.
@@ -39,7 +40,7 @@ abstract class Shop {
      * @param url Gidilecek olan ürün URL'i
      * @param page Puppeteer sayfası
      */
-    abstract async getProductDetailFromProductPage(url: string, category: string, page: Page) : Promise<IProduct>;
+    abstract getProductDetailFromProductPage(url: string, category: string, page: Page) : Promise<IProduct>;
 
     /**
      * Gelen kategorileri veritabanına kaydeder. Varsa günceller.
@@ -93,7 +94,7 @@ abstract class Shop {
                 else if (!isMainProduct) {
                     let firstSub: IProduct = doc.subProducts[0];
 
-                    if (this.checkAttrs(firstSub.attributes, product.attributes)) {
+                    if (this.checkAttrs(firstSub.attributes, product.attributes, product.categories[0])) {
                         doc.subProducts.push(product);
                         await ShopProduct.findOneAndUpdate(filter, doc);
                         catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
@@ -138,29 +139,21 @@ abstract class Shop {
      * 
      * @param attributes eklenecek olan ürünün detayları
      * @param _attributes hali hazırda veritabanında olan ürünün detayları
+     * @param category main ürünün kategorisi
      */
-    checkAttrs(attributes: object[], _attributes: object[]): boolean {
-        let ramFilter = (e) => { return e["attributeName"] === "RAM" };
-        let screenSizeFilter = (e) => { return e["attributeName"] === "Ekran Boyutu" };
-        let ssdFilter = (e) => { return e["attributeName"] === "SSD" };
-        let hddFilter = (e) => { return e["attributeName"] === "HDD" };
-        let cpuFilter = (e) => { return e["attributeName"] === "İşlemci" };
-        let cpuModelFilter = (e) => { return e["attributeName"] === "İşlemci Model" };
-
-        let factory = (a, f) => { return typeof a.filter(f)[0] === "undefined" ? "" : a.filter(f)[0]["attributeValue"]; };
-
+    checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {
         let result: boolean = false;
 
-        // Laptop
-        if (attributes.filter(ramFilter).length > 0 && attributes.filter(screenSizeFilter).length > 0) {
-            result = factory(attributes, ramFilter) === factory(_attributes, ramFilter) &&
-                factory(attributes, screenSizeFilter) === factory(_attributes, screenSizeFilter) &&
-                factory(attributes, ssdFilter) === factory(_attributes, ssdFilter) &&
-                factory(attributes, hddFilter) === factory(_attributes, hddFilter);
-        } else if (attributes.filter(ramFilter).length > 0) { // PC
+        if (category === "Laptop") {
+            let laptopFilters: LaptopFilters = new LaptopFilters();
 
+            result = laptopFilters.factory(attributes, _attributes, laptopFilters.ramFilter) &&
+                laptopFilters.factory(attributes, _attributes, laptopFilters.screenSizeFilter) &&
+                laptopFilters.factory(attributes, _attributes, laptopFilters.ssdFilter) &&
+                laptopFilters.factory(attributes, _attributes, laptopFilters.hddFilter) &&
+                laptopFilters.factory(attributes, _attributes, laptopFilters.cpuFilter);
         }
-        
+
         return result;
     }
 
