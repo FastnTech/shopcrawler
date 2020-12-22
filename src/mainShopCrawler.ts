@@ -16,7 +16,7 @@ import {IProduct} from "./interfaces/IProduct";
     for (let shopProduct of shopProducts) {
         let _product: IProduct = await hepsi.getProductDetailFromProductPage(shopProduct.url, "Laptop", page);
 
-        if (_product && _product.id !== "") {
+        if (_product && _product.id && _product.id !== "") {
             _product.mainId = shopProduct.id;
             await hepsi.updateAndCreateProducts([_product], true);
         }

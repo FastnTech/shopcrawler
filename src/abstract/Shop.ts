@@ -5,6 +5,7 @@ import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfi
 import {IProduct} from "../interfaces/IProduct";
 import {Product} from "../models/Product";
 import LaptopFilters from "../filters/LaptopFilters";
+import Filter from './Filter';
 
 abstract class Shop {
     abstract shopId: string;
@@ -96,7 +97,7 @@ abstract class Shop {
 
                     if (this.checkAttrs(firstSub.attributes, product.attributes, product.categories[0])) {
                         doc.subProducts.push(product);
-                        await ShopProduct.findOneAndUpdate(filter, doc);
+                        //await ShopProduct.findOneAndUpdate(filter, doc);
                         catDatabaseService.info(() => `Successfull: New product '${product.name}' added Shop: ${this.shopId}`);
                     } else {
                         catDatabaseService.info(() => `Successfull: Adding failed product attributes not match`);
@@ -143,15 +144,12 @@ abstract class Shop {
      */
     checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {
         let result: boolean = false;
+        let filter: Filter;
 
         if (category === "Laptop") {
-            let laptopFilters: LaptopFilters = new LaptopFilters();
+            filter = new LaptopFilters();
 
-            result = laptopFilters.factory(attributes, _attributes, laptopFilters.ramFilter) &&
-                laptopFilters.factory(attributes, _attributes, laptopFilters.screenSizeFilter) &&
-                laptopFilters.factory(attributes, _attributes, laptopFilters.ssdFilter) &&
-                laptopFilters.factory(attributes, _attributes, laptopFilters.hddFilter) &&
-                laptopFilters.factory(attributes, _attributes, laptopFilters.cpuFilter);
+            result = filter.apply(attributes, _attributes);
         }
 
         return result;
@@ -166,7 +164,7 @@ abstract class Shop {
         let product: IProduct = new Product();
 
         if (typeof data === "undefined") {
-            return product;
+            return null;
         }
 
         product.id = data['id'] || '';
@@ -264,23 +262,24 @@ abstract class Shop {
      *
      * @param text Çevirilecek metin
      */
-    slugify = function(text) {
+    slugify = function(text: string) {
         var trMap = {
-            'çÇ':'c',
-            'ğĞ':'g',
-            'şŞ':'s',
-            'üÜ':'u',
-            'ıİ':'i',
-            'öÖ':'o'
+            'çÇ': 'c',
+            'ğĞ': 'g',
+            'şŞ': 's',
+            'üÜ': 'u',
+            'ıİ': 'i',
+            'öÖ': 'o'
         };
+
         for(var key in trMap) {
             text = text.replace(new RegExp('['+key+']','g'), trMap[key]);
         }
+
         return  text.replace(/[^-a-zA-Z0-9\s]+/ig, '') // remove non-alphanumeric chars
             .replace(/\s/gi, "-") // convert spaces to dashes
             .replace(/[-]+/gi, "-") // trim repeated dashes
             .toLowerCase();
-
     }
 
     sleep = function(ms) {
