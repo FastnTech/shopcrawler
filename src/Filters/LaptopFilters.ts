@@ -1,3 +1,4 @@
+import Filter from "../abstract/Filter";
 class LaptopFilters extends Filter {
     ramFilter = (e: { [x: string]: string; }) => {
         return e["attributeName"] === "RAM"

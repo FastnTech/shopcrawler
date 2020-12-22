@@ -14,3 +14,5 @@ abstract class Filter {
         return  aValue === bValue; 
     };
 }
+
+export default Filter;
