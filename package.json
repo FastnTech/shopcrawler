@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@logdna/logger": "^2.1.2",
     "@types/mongoose": "^5.7.36",
     "@types/puppeteer": "^3.0.1",
     "mongoose": "^5.10.0",

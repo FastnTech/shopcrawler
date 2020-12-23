@@ -1,9 +1,7 @@
-import { Page, Product } from 'puppeteer';
 import Shop from '../abstract/Shop';
+import { Page } from 'puppeteer';
 import { IShopCategory } from '../entities/ShopCategory';
-import { IShopProduct } from '../entities/ShopProduct';
-import { catCategoryProd } from '../LogConfig';
-import {IProduct} from "../interfaces/IProduct";
+import { IProduct } from "../interfaces/IProduct";
 
 class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com";
@@ -61,7 +59,7 @@ class Hepsiburada extends Shop {
             await page.goto(pagesLinks[i]);
             let products = await page.evaluate(this.getProductsEvaluate);
             data = data.concat(products);
-            catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
+            this.log().info(`Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
         }
 
         return this.arrayToProductList(data);

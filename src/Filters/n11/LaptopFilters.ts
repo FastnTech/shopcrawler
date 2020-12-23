@@ -1,4 +1,4 @@
-import Filter from "../abstract/Filter";
+import Filter from "../../abstract/Filter";
 
 class LaptopFilters extends Filter {
     getFilters(): object[] {

@@ -1,8 +1,7 @@
-import Shop from "../abstract/Shop";
-import {Page} from "puppeteer";
-import {IShopCategory} from "../entities/ShopCategory";
-import {IProduct} from "../interfaces/IProduct";
-import { catCategoryProd } from '../LogConfig';
+import Shop from '../abstract/Shop';
+import { Page } from 'puppeteer';
+import { IShopCategory } from '../entities/ShopCategory';
+import { IProduct } from "../interfaces/IProduct";
 
 class n11 extends Shop {
     shopId: string = "n11";
@@ -71,10 +70,10 @@ class n11 extends Shop {
                 await page.goto(pagesLinks[i], {waitUntil: 'load', timeout: 0});
                 let products = await page.evaluate(this.getProductsEvaluate);
                 data = data.concat(products);
-                catCategoryProd.info(() => `Getting products; Page: ${i + 1}; Products: ${products.length}; Shop: ${this.shopId};`);
+                this.log().info(`Getting products; Page: ${i + 1}; Products: ${products.length}; Shop: ${this.shopId};`);
             }
         } catch (err) {
-            catCategoryProd.info(() => `An error occurred on page; Shop: ${this.shopId};`);
+            this.log().warn(`An error occurred on page; Shop: ${this.shopId};`);
         }
 
         return this.arrayToProductList(data);
@@ -86,79 +85,83 @@ class n11 extends Shop {
         await this.sleep(1500);
 
         let data = await page.evaluate(() => {
-            let id = document.querySelector('[name="skuId"]').getAttribute('value');
-            let productName = document.querySelector('.proName').textContent.trim();
-            let price = document.querySelector('.newPrice').textContent.replace(/[^0-9.,]/g, '');
-            let originalPrice = document.querySelector('.oldPrice ').textContent.replace(/[^0-9.,]/g, '') || price;
-            let dealerName = document.querySelector('.sallerTop a').textContent;
-            let dealerPoint = document.querySelector('.shopPoint .point') ? document.querySelector('.shopPoint .point').textContent.trim() : '-';
-            let shipping = document.querySelector('.cargoTime').textContent.trim();
-            let comments = document.querySelector('#tabProductCom').textContent.replace(/[^0-9]/g, '');
-            let brand = document.querySelector('a[href*="markalar"]').textContent.trim();
-            let image = document.querySelector('.imgObj img').getAttribute('src');
-            let attributes = [];
+            try {
+                let id = document.querySelector('[name="skuId"]').getAttribute('value');
+                let productName = document.querySelector('.proName').textContent.trim();
+                let price = document.querySelector('.newPrice').textContent.replace(/[^0-9.,]/g, '');
+                let originalPrice = document.querySelector('.oldPrice ').textContent.replace(/[^0-9.,]/g, '') || price;
+                let dealerName = document.querySelector('.sallerTop a').textContent;
+                let dealerPoint = document.querySelector('.shopPoint .point') ? document.querySelector('.shopPoint .point').textContent.trim() : '-';
+                let shipping = document.querySelector('.cargoTime').textContent.trim();
+                let comments = document.querySelector('#tabProductCom').textContent.replace(/[^0-9]/g, '');
+                let brand = document.querySelector('a[href*="markalar"]').textContent.trim();
+                let image = document.querySelector('.imgObj img').getAttribute('src');
+                let attributes = [];
 
-            document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
-                let attrName = e.querySelector('.label').textContent.trim();
-                let attrValue = e.querySelector('.data').textContent.trim();
+                document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
+                    let attrName = e.querySelector('.label').textContent.trim();
+                    let attrValue = e.querySelector('.data').textContent.trim();
 
-                if (attrName === "Ekran Kartı Belleği") {
-                    attrName = "Ekran Kartı Hafızası";
-                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                }
+                    if (attrName === "Ekran Kartı Belleği") {
+                        attrName = "Ekran Kartı Hafızası";
+                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                    }
 
-                if (attrName === "Sistem Belleği (Gb)") {
-                    attrName = "RAM";
-                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                }
+                    if (attrName === "Sistem Belleği (Gb)") {
+                        attrName = "RAM";
+                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                    }
 
-                if (attrName === "SSD") {
-                    attrName = "SSD";
-                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                }
+                    if (attrName === "SSD") {
+                        attrName = "SSD";
+                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                    }
 
-                if (attrName === "Disk Kapasitesi") {
-                    attrName = "HDD";
-                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                }
+                    if (attrName === "Disk Kapasitesi") {
+                        attrName = "HDD";
+                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                    }
 
-                if (attrName === "İşlemci") {
-                    attrName = "İşlemci";
-                    attrValue = attrValue.toLocaleUpperCase();
-                }
+                    if (attrName === "İşlemci") {
+                        attrName = "İşlemci";
+                        attrValue = attrValue.toLocaleUpperCase();
+                    }
 
-                if (attrName === "İşlemci Modeli") {
-                    attrName = "İşlemci Model";
-                    attrValue = attrValue.toLocaleUpperCase();
-                }
+                    if (attrName === "İşlemci Modeli") {
+                        attrName = "İşlemci Model";
+                        attrValue = attrValue.toLocaleUpperCase();
+                    }
 
-                if (attrName === "Ekran Boyutu") {
-                    attrName = "Ekran Boyutu";
-                    attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                }
+                    if (attrName === "Ekran Boyutu") {
+                        attrName = "Ekran Boyutu";
+                        attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                    }
 
-                attributes.push({
-                    "attributeName": attrName,
-                    "attributeValue": attrValue
+                    attributes.push({
+                        "attributeName": attrName,
+                        "attributeValue": attrValue
+                    });
                 });
-            });
 
-            return {
-                id: id,
-                name: productName,
-                price: price,
-                originalPrice: originalPrice,
-                image: image,
-                url: window.location.href,
-                categories: [],
-                attributes: attributes,
-                commentCount: comments,
-                dealerName: dealerName,
-                dealerPoint: dealerPoint,
-                shipping: shipping,
-                brand: brand,
-                shopId: '',
-                mainId: id
+                return {
+                    id: id,
+                    name: productName,
+                    price: price,
+                    originalPrice: originalPrice,
+                    image: image,
+                    url: window.location.href,
+                    categories: [],
+                    attributes: attributes,
+                    commentCount: comments,
+                    dealerName: dealerName,
+                    dealerPoint: dealerPoint,
+                    shipping: shipping,
+                    brand: brand,
+                    shopId: '',
+                    mainId: id
+                }
+            } catch (err) {
+                return null;
             }
         });
 
