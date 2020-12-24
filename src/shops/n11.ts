@@ -83,7 +83,11 @@ class n11 extends Shop {
     }
 
     async getProductDetailFromProductPage(url: string, category: string, page: Page): Promise<IProduct> {
-        await page.goto(url, {waitUntil: 'load', timeout: 0});
+        try {
+            await page.goto(url, {waitUntil: 'load', timeout: 0});
+        } catch (err) {
+            return null;
+        }
 
         await this.sleep(1500);
 

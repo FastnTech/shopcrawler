@@ -108,7 +108,11 @@ class Hepsiburada extends Shop {
     }
 
     async getProductDetailFromProductPage(url: string, category: string, page: Page) : Promise<IProduct> {
-        await page.goto(url);
+        try {
+            await page.goto(url, {waitUntil: 'load', timeout: 0});
+        } catch (err) {
+            return null;
+        }
 
         let data = await page.evaluate(() => {
             //stock check
