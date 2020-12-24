@@ -5,13 +5,13 @@ import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfi
 import LogDna from "../LogDna";
 import {IProduct} from "../interfaces/IProduct";
 import {Product} from "../models/Product";
-import LaptopFilters from "../filters/n11/LaptopFilters";
 import Filter from './Filter';
 
 abstract class Shop {
     abstract shopId: string;
     abstract shopUrl: string;
     abstract shopName: string;
+    abstract laptopFilters: Filter;
 
     /**
      * Bir kategori sayfasındaki tüm ürünlerin detay
@@ -90,7 +90,7 @@ abstract class Shop {
 
                 if (productFilter.length > 0) {
                     doc.subProducts[index] = product;
-                    //await ShopProduct.findOneAndUpdate(filter, doc);
+                    await ShopProduct.findOneAndUpdate(filter, doc);
                     LogDna.info(`Product '${product.name}' updated Shop: ${this.shopId}`);
                 }
                 else if (!isMainProduct) {
@@ -100,7 +100,7 @@ abstract class Shop {
                         LogDna.info(`updateAndCreateProducts Processing in ${product.id}-${product.name} | Main ${firstSub.id}-${firstSub.name}`);
 
                         doc.subProducts.push(product);
-                        //await ShopProduct.findOneAndUpdate(filter, doc);
+                        await ShopProduct.findOneAndUpdate(filter, doc);
                         LogDna.info(`New product '${product.name}' added Shop: ${this.shopId}`);
                     } else {
                         LogDna.warn(`Adding failed product attributes not match`);
@@ -147,12 +147,9 @@ abstract class Shop {
      */
     checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {
         let result: boolean = false;
-        let filter: Filter;
 
         if (category === "Laptop") {
-            filter = new LaptopFilters();
-
-            result = filter.apply(attributes, _attributes);
+            result = this.laptopFilters.apply(attributes, _attributes);
         }
 
         return result;

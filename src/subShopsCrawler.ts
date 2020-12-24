@@ -1,6 +1,7 @@
 import BrowserManager from "./core/BrowserManager";
 import Hepsiburada from './shops/Hepsiburada';
 import n11 from './shops/n11';
+import Trendyol from './shops/Trendyol';
 import './database';
 import {IProduct} from "./interfaces/IProduct";
 import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
@@ -17,9 +18,11 @@ import Shop from './abstract/Shop';
     let mainShopProducts: IShopProduct[] = await hepsi.getAllProductsFromDatabase();
 
     let nonbir = new n11();
+    let trendyol = new Trendyol();
 
     let shops: Shop[] = [
-        nonbir
+        trendyol,
+        nonbir,
     ];
 
     for (let i = 0; i < shops.length; i++) {

@@ -2,11 +2,13 @@ import Shop from '../abstract/Shop';
 import { Page } from 'puppeteer';
 import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
+import Filter from '../abstract/Filter';
 
 class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com";
     shopName = "Hepsiburada";
     shopId = "hepsiburada";
+    laptopFilters: Filter = null;
 
     getProductsEvaluate () {
         let products = document.querySelectorAll('.product-list li');

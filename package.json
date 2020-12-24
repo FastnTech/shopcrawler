@@ -7,7 +7,9 @@
     "clean": "rimraf dist",
     "build": "npx tsc --importHelpers",
     "watch:build": "tsc --watch",
-    "run": "node dist/index.js"
+    "run": "node dist/index.js",
+    "subshops": "node ./dist/subShopsCrawler.js",
+    "mainshop": "node ./dist/mainShopCrawler.js"
   },
   "author": "",
   "license": "ISC",

@@ -2,11 +2,14 @@ import Shop from '../abstract/Shop';
 import { Page } from 'puppeteer';
 import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
+import Filter from '../abstract/Filter';
+import LaptopFilters from '../Filters/n11/LaptopFilters';
 
 class n11 extends Shop {
     shopId: string = "n11";
     shopName: string = "n11";
     shopUrl: string = "https://www.n11.com/";
+    laptopFilters: Filter = new LaptopFilters();
 
     getProductsEvaluate () {
         let products = document.querySelectorAll('.group.listingGroup.resultListGroup.import-search-view .catalogView ul li');
