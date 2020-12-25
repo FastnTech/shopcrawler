@@ -6,8 +6,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npx tsc --importHelpers",
-    "watch:build": "tsc --watch",
-    "run": "node dist/index.js",
+    "watch:build": "tsc --watch --importHelpers",
     "subshops": "node ./dist/subShopsCrawler.js",
     "mainshop": "node ./dist/mainShopCrawler.js",
     "test": "jest --detectOpenHandles --runInBand --forceExit",

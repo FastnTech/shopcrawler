@@ -1,5 +1,37 @@
 # Shop Crawler
 
+## Komutlar
+
+Typescript'i build etmek için
+```sh
+npm run build
+```
+
+Sürekli build için
+```sh
+npm run watch:build
+```
+
+Build sonrası alt mağazaları crawl etmek için
+```sh
+npm run subshops
+```
+
+Build sonrası Hepsiburadayı crawl etmek için
+```sh
+npm run mainshop
+```
+
+Testleri çalıştırmak için
+```sh
+npm run test
+```
+
+Jest global yüklenmezse npx den testleri çalıtırmak için
+```sh
+npm run test-npx
+```
+
 ## Abstract
 
 Yeni eklenecek her mağaza(n11, hepsiburada vb) Shop classından extend edilmelidir. Oluşturulacak olan class yeni bir dosya içerisinde `shops` klasörü altına alınmalıdır. İçerisinde doldurulması gereken en önemli fonksiyonlar: `getRelatedProductsFromSearching`, `getProductDetailFromProductPage`. Bu fonksiyonların örnekleri `shops/Hepsiburada.ts` ve `shops/n11.ts` içerisinde bulunuyor. Fonksiyonun amacı ve aldığı parametrelerin ne oldukları ile ilgili bilgi almak için abstract class ın içerisinde fonksiyonlara ait Hint kısımları incelenebilir.
