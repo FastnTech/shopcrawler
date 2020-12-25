@@ -2,6 +2,7 @@ import BrowserManager from "./core/BrowserManager";
 import Hepsiburada from './shops/Hepsiburada';
 import n11 from './shops/n11';
 import Trendyol from './shops/Trendyol';
+import Gittigidiyor from './shops/Gittigidiyor';
 import './database';
 import {IProduct} from "./interfaces/IProduct";
 import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
@@ -19,8 +20,10 @@ import Shop from './abstract/Shop';
 
     let nonbir = new n11();
     let trendyol = new Trendyol();
+    let gittigidiyor = new Gittigidiyor();
 
     let shops: Shop[] = [
+        gittigidiyor,
         trendyol,
         nonbir,
     ];
