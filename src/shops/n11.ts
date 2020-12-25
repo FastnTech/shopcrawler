@@ -93,6 +93,10 @@ class n11 extends Shop {
 
         let data = await page.evaluate(() => {
             try {
+                if (document.querySelector('[id="outOfStock"]').getAttribute("value") === "true") {
+                    return null;
+                }
+
                 let id = document.querySelector('[name="skuId"]').getAttribute('value');
                 let productName = document.querySelector('.proName').textContent.trim();
                 let price = document.querySelector('.newPrice').textContent.replace(/[^0-9.,]/g, '');
@@ -184,7 +188,12 @@ class n11 extends Shop {
 
     async getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]> {
         let newName: string = name.split(' ').slice(0, 5).join('+');
-        await page.goto("https://www.n11.com/arama?q=" + encodeURIComponent(newName), {waitUntil: 'load', timeout: 0});
+
+        try {
+            await page.goto("https://www.n11.com/arama?q=" + encodeURIComponent(newName), {waitUntil: 'load', timeout: 0});
+        } catch (err) {
+            return [];
+        }
 
         let productUrls: string[] = await page.evaluate(() => {
             if (document.querySelector('.result-mean-text-mm') !== null) {

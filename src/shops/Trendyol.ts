@@ -22,9 +22,13 @@ class Trendyol extends Shop {
     async getRelatedProductsFromSearching(name: string, category: string, page: Page): Promise<IProduct[]> {
         let newName: string = name.split(' ').slice(0, 5).join(' ');
 
-        await page.goto("https://www.trendyol.com/sr?q=" + encodeURIComponent(newName), { 
-            waitUntil: 'load', timeout: 0
-        });
+        try {
+            await page.goto("https://www.trendyol.com/sr?q=" + encodeURIComponent(newName), { 
+                waitUntil: 'load', timeout: 0
+            });
+        } catch (err) {
+            return [];
+        }
 
         let productUrls: string[] = await page.evaluate(() => {
             let title = document.querySelector('.srch-rslt-title');
@@ -67,6 +71,11 @@ class Trendyol extends Shop {
 
         let data = await page.evaluate(() => {
             try {
+                // giriş yapmış kullanıcılar için .so (sold out) yok .notify-me-btn var
+                if (document.querySelector('.pr-in-btn.add-to-bs.so') !== null) {
+                    return null;
+                }
+
                 let id = window["productDetailDatalayerObject"]["ProductId"] || '';
                 let productName = window["productDetailDatalayerObject"]["ProductName"] || '';
                 let price = window["productDetailDatalayerObject"]["DiscountedPrice"] || window["productDetailDatalayerObject"]["SalePrice"] || '';
