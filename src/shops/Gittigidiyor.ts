@@ -72,56 +72,142 @@ class Gittigidiyor extends Shop {
         let data = await page.evaluate(() => {
             try {
                 let id = document.querySelector('#productId').getAttribute('value');
-                let productName = document.querySelector('#sp-title').textContent;
-                let price = document.querySelector('#sp-price-highPrice').textContent.replace(/[^0-9.,]/g, '');
+                let productName = (document.querySelector('#sp-title') || { textContent: "" }).textContent;
+                let price = (document.querySelector('#sp-price-highPrice') || { textContent: "0" }).textContent.replace(/[^0-9.,]/g, '');
                 let originalPrice = price;
-                let dealerName = document.querySelector('#sp-member-nick').textContent.trim();
-                let dealerPoint = document.querySelector('#sp-positiveCommentPercentage').textContent;
-                let shipping = document.querySelector('.shippingTimeText').textContent.trim();
-                let comments = document.querySelector('.best-review-all-reviews').textContent.replace(/[^0-9]/g, '');
-                let brand = document.querySelector('[id="spp-brand"]').textContent.trim();
+                let dealerName = (document.querySelector('#sp-member-nick') || { textContent: "" }).textContent.trim();
+                let dealerPoint = (document.querySelector('#sp-positiveCommentPercentage') || { textContent: "" }).textContent;
+                let shipping = (document.querySelector('.shippingTimeText') || { textContent: "" }).textContent.trim();
+                let comments = (document.querySelector('.best-review-all-reviews') || { textContent: "0" }).textContent.replace(/[^0-9]/g, '');
+                let brand = (document.querySelector('[id="spp-brand"]') || { textContent: "" }).textContent.trim();
                 let image = document.querySelector('#big-photo').getAttribute('src');
                 let attributes = [];
 
-                document.querySelectorAll('.catalog-info-content ul.product-items > li').forEach((e) => {
-                    let attrName = e.querySelector('.spec-title').textContent.trim();
-                    let attrValue = e.querySelector('.productFeaturesitemList').textContent.trim();
-
-                    if (attrName === "Bellek (RAM)") {
-                        attrName = "RAM";
-                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                    }
-
-                    if (attrName === "Sabit Disk (SSD) Boyutu") {
-                        attrName = "SSD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "Sabit Disk (HDD) Boyutu") {
-                        attrName = "HDD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "CPU Serisi") {
-                        attrName = "İşlemci";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "CPU Modeli") {
-                        attrName = "İşlemci Model";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "Ekran Boyutu") {
-                        attrName = "Ekran Boyutu";
-                        attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                    }
-
-                    attributes.push({
-                        "attributeName": attrName,
-                        "attributeValue": attrValue
+                if (document.querySelectorAll('.catalog-info-content ul.product-items > li') && document.querySelectorAll('.catalog-info-content ul.product-items > li').length > 10) {
+                    document.querySelectorAll('.catalog-info-content ul.product-items > li').forEach((e) => {
+                        let attrName = e.querySelector('.spec-title').textContent.trim();
+                        let attrValue = e.querySelector('.productFeaturesitemList').textContent.trim();
+    
+                        if (attrName === "Bellek (RAM)") {
+                            attrName = "RAM";
+                            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                        }
+    
+                        if (attrName === "Sabit Disk (SSD) Boyutu") {
+                            attrName = "SSD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "Sabit Disk (HDD) Boyutu") {
+                            attrName = "HDD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "CPU Serisi") {
+                            attrName = "İşlemci";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "CPU Modeli") {
+                            attrName = "İşlemci Model";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "Ekran Boyutu") {
+                            attrName = "Ekran Boyutu";
+                            attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                        }
+    
+                        attributes.push({
+                            "attributeName": attrName,
+                            "attributeValue": attrValue
+                        });
                     });
-                });
+                }
+
+                if (document.querySelectorAll('.tech-spec tr') && attributes.length === 0) {
+                    document.querySelectorAll('.tech-spec tr').forEach((e) => {
+                        let attrName = e.querySelectorAll('td')[0].textContent.trim();
+                        let attrValue = e.querySelectorAll('td')[1].textContent.trim();
+
+                        if (attrName === "Ram (Sistem Belleği)") {
+                            attrName = "RAM";
+                            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                        }
+    
+                        if (attrName === "SSD Kapasitesi") {
+                            attrName = "SSD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "Harddisk Kapasitesi") {
+                            attrName = "HDD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "İşlemci Tipi") {
+                            attrName = "İşlemci";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "İşlemci") {
+                            attrName = "İşlemci Model";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "Ekran Boyutu") {
+                            attrName = "Ekran Boyutu";
+                            attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                        }
+    
+                        attributes.push({
+                            "attributeName": attrName,
+                            "attributeValue": attrValue
+                        });
+                    });
+                }
+
+                if (document.querySelectorAll('#productDescription table tr') && attributes.length === 0) {
+                    document.querySelectorAll('.tech-spec tr').forEach((e) => {
+                        let attrName = e.querySelectorAll('td')[0].textContent.trim();
+                        let attrValue = e.querySelectorAll('td')[1].textContent.trim();
+
+                        if (attrName === "Ram (Sistem Belleği)") {
+                            attrName = "RAM";
+                            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+                        }
+    
+                        if (attrName === "SSD Kapasitesi") {
+                            attrName = "SSD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "Harddisk Kapasitesi") {
+                            attrName = "HDD";
+                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
+                        }
+    
+                        if (attrName === "İşlemci Tipi") {
+                            attrName = "İşlemci";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "İşlemci") {
+                            attrName = "İşlemci Model";
+                            attrValue = attrValue.toLocaleUpperCase();
+                        }
+    
+                        if (attrName === "Ekran Boyutu") {
+                            attrName = "Ekran Boyutu";
+                            attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                        }
+    
+                        attributes.push({
+                            "attributeName": attrName,
+                            "attributeValue": attrValue
+                        });
+                    });
+                }
 
                 return {
                     id: id,

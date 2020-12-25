@@ -6,7 +6,7 @@ abstract class Filter {
     attributeFilter (attributes: any, equal: string) {
         let filtered = attributes.filter((e: { [x: string]: string; }) => e["attributeName"] === equal);
 
-        return filtered.length > 0 ? filtered[0]["attributeValue"] : "NONE";
+        return filtered.length > 0 ? filtered[0]["attributeValue"].length > 0 ? filtered[0]["attributeValue"] : "NONE" : "NONE";
     };
 
     apply (attributesA: any, attributesB: any): boolean {

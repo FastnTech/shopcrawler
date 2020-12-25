@@ -141,8 +141,8 @@ abstract class Shop {
     /**
      * Ürün attributelerini alır ve kategorisine göre eşleştirme sağlar
      * 
-     * @param attributes eklenecek olan ürünün detayları
-     * @param _attributes hali hazırda veritabanında olan ürünün detayları
+     * @param attributes hali hazırda veritabanında olan ürünün detayları
+     * @param _attributes eklenecek olan ürünün detayları
      * @param category main ürünün kategorisi
      */
     checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {

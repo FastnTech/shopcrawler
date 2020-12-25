@@ -35,7 +35,7 @@ class LaptopFilters extends Filter {
     }
 
     ekranFilter(aValue: string, bValue: string): boolean {
-        return aValue === bValue;
+        return bValue.indexOf(aValue) !== -1;
     }
 
     ssdFilter(aValue: string, bValue: string): boolean {
@@ -47,7 +47,7 @@ class LaptopFilters extends Filter {
     }
 
     cpuFilter(aValue: string, bValue: string): boolean {
-        return aValue === bValue;
+        return bValue.indexOf(aValue) !== -1;
     }
 
     cpuModelFilter(aValue: string, bValue: string): boolean {
