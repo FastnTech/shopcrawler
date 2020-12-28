@@ -89,8 +89,8 @@ class Trendyol extends Shop {
                 let attributes = [];
 
                 id = id.toString();
-                price = price.toString().replace(/./g, ',');
-                originalPrice = price.toString().replace(/./g, ',');
+                price = price.toString().replace(/\./g, ',');
+                originalPrice = price.toString().replace(/\./g, ',');
 
                 document.querySelectorAll('.pr-prop .prop-item').forEach((e) => {
                     let attrName = e.querySelector('.item-key').textContent.trim().replace(/:/g, '');
