@@ -69,7 +69,7 @@ class CicekSepeti extends Shop {
         });
 
         //await page.addScriptTag({path: path.join(__dirname, '../../dist/core/FunctionInjector.js')}); // local dev
-        await page.addScriptTag({path: path.join(__dirname, './dist/core/FunctionInjector.js')}); // circle ci
+        await page.addScriptTag({path: path.join(__dirname, '../FunctionInjector.js')}); // circle ci
 
         let data: any = await page.evaluate(() => {
             try {
