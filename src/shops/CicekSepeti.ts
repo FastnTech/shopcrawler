@@ -67,7 +67,8 @@ class CicekSepeti extends Shop {
             window.scrollBy(0, window.innerHeight);
         });
 
-        await page.addScriptTag({path: 'dist\\core\\FunctionInjector.js'});
+        //await page.addScriptTag({path: 'dist\\core\\FunctionInjector.js'});
+        await page.addScriptTag({path: './dist/core/FunctionInjector.js'});
 
         let data: any = await page.evaluate(() => {
             try {
