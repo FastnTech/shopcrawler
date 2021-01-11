@@ -4,6 +4,7 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/trendyol/LaptopFilters';
+import * as path from 'path';
 
 class CicekSepeti extends Shop {
     shopId: string = "ciceksepeti";
@@ -68,7 +69,7 @@ class CicekSepeti extends Shop {
         });
 
         //await page.addScriptTag({path: 'dist\\core\\FunctionInjector.js'});
-        await page.addScriptTag({path: './dist/core/FunctionInjector.js'});
+        await page.addScriptTag({path: path.join(__dirname, '../../dist/core/FunctionInjector.js')});
 
         let data: any = await page.evaluate(() => {
             try {
