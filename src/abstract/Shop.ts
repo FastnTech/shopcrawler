@@ -63,7 +63,7 @@ abstract class Shop {
 
                 catDatabaseService.info(() => `Successfull: Category '${category.name}' updated Shop: ${this.shopId}`);
             } else {
-                category.save();
+                await category.save();
 
                 catDatabaseService.info(() => `Successfull: Category '${category.name}' saved Shop: ${this.shopId}`);
             }
@@ -259,7 +259,8 @@ abstract class Shop {
     }
 
     /**
-     *
+     * Verilen metni slug url e çevirir
+     * 
      * @param text Çevirilecek metin
      */
     slugify = function(text: string) {
@@ -280,14 +281,28 @@ abstract class Shop {
             .replace(/\s/gi, "-") // convert spaces to dashes
             .replace(/[-]+/gi, "-") // trim repeated dashes
             .toLowerCase();
-    }
+    };
 
+    /**
+     * Async methodların beklemelerini sağlayan helper fonksiyon
+     * 
+     * Kullanım : await this.sleep(2000); // 2 saniye bekletir.
+     * 
+     * @param ms Milisaniye 
+     */
     sleep = function(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    };
 
+    /**
+     * Loglama fonksiyonu.
+     * 2 çeşit loglama yapılabiliyor.
+     * Eğer logların logdna e gönderilmesi isteniyorsa LogDna nesnesi return edilmeli
+     * catCategoryProd nesnesi sadece console işlevi görmektedir
+     * LogDna console a herhangi bir alert basmaz
+     */
     log = function() {
-        return LogDna;
+        return catCategoryProd;
     }
 }
 

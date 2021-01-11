@@ -1,8 +1,10 @@
 import BrowserManager from "./core/BrowserManager";
+import PageManager from "./core/PageManager";
 import Hepsiburada from './shops/Hepsiburada';
 import n11 from './shops/n11';
 import Trendyol from './shops/Trendyol';
 import Gittigidiyor from './shops/Gittigidiyor';
+import CicekSepeti from './shops/CicekSepeti';
 import './database';
 import {IProduct} from "./interfaces/IProduct";
 import ShopProduct, {IShopProduct} from "./entities/ShopProduct";
@@ -10,9 +12,10 @@ import Shop from './abstract/Shop';
 
 (async () => {
     let browserManager: BrowserManager = new BrowserManager();
+    let pageManager: PageManager = new PageManager();
 
     let browser = await browserManager.startBrowser();
-    let page = await browser.newPage();
+    let page = await pageManager.create(browser);
 
     let currentCategory = "Laptop";
     let hepsi = new Hepsiburada();
@@ -21,8 +24,10 @@ import Shop from './abstract/Shop';
     let nonbir = new n11();
     let trendyol = new Trendyol();
     let gittigidiyor = new Gittigidiyor();
+    let ciceksepeti = new CicekSepeti();
 
     let shops: Shop[] = [
+        ciceksepeti,
         gittigidiyor,
         trendyol,
         nonbir,

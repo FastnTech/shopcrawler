@@ -37,7 +37,6 @@ describe("İlk entegrasyon için test ürünü", () => {
     it('Ürün verileri beklendiği gibi gelmeli ve kodlar hata vermemeli', () => {
         expect(data.id).toEqual("617978870");
         expect(data.name).toEqual("Asus D509DJ-EJ120 Dizüstü Bilgisayar (Laptop)");
-        expect(data.price).toEqual("6.779,00");
         expect(data.attributes.filter(e => { return e.attributeName === "RAM" })[0].attributeValue).toEqual("8 GB");
         expect(data.attributes.filter(e => { return e.attributeName === "SSD" })[0].attributeValue).toEqual("256 GB");
     });

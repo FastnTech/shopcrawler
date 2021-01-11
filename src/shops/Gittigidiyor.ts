@@ -83,10 +83,23 @@ class Gittigidiyor extends Shop {
                 let image = document.querySelector('#big-photo').getAttribute('src');
                 let attributes = [];
 
-                if (document.querySelectorAll('.catalog-info-content ul.product-items > li') && document.querySelectorAll('.catalog-info-content ul.product-items > li').length > 10) {
-                    document.querySelectorAll('.catalog-info-content ul.product-items > li').forEach((e) => {
-                        let attrName = e.querySelector('.spec-title').textContent.trim();
-                        let attrValue = e.querySelector('.productFeaturesitemList').textContent.trim();
+                if (document.querySelectorAll('.catalog-info-content ul.product-items > li') && document.querySelectorAll('.catalog-info-content ul.product-items > li').length > 10 || document.querySelectorAll('.catalog-info-content tr') && document.querySelectorAll('.catalog-info-content tr').length > 10) {
+                    let list = document.querySelectorAll('.catalog-info-content ul.product-items > li');
+                    let table = document.querySelectorAll('.catalog-info-content tr');
+
+                    (list.length > 0 ? list : table).forEach((e, i) => {
+                        let attrName = '';
+                        let attrValue = '';
+
+                        if (e.querySelector('.spec-title')) {
+                            attrName = e.querySelector('.spec-title').textContent.trim();
+                            attrValue = e.querySelector('.productFeaturesitemList').textContent.trim();
+                        } else if (e.querySelectorAll('td').length > 1) {
+                            attrName = e.querySelector('.spec-title').textContent.trim();
+                            attrValue = e.querySelector('.productFeaturesitemList').textContent.trim();
+                        } else {
+                            return;
+                        }
     
                         if (attrName === "Bellek (RAM)") {
                             attrName = "RAM";

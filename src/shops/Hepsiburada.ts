@@ -51,14 +51,14 @@ class Hepsiburada extends Shop {
 
         let data = await page.evaluate(this.getProductsEvaluate);
 
-        let pagesLinks = await page.evaluate(() => {
-            return Object.values(document.querySelectorAll('#pagination a')).map(a => {
-                return window.location.protocol + a.getAttribute('href');
-            });
-        });
+        // let pagesLinks = await page.evaluate(() => {
+        //     return Object.values(document.querySelectorAll('#pagination a')).map(a => {
+        //         return window.location.protocol + a.getAttribute('href');
+        //     });
+        // });
 
-        for (let i = 0; i < pagesLinks.length; i++) {
-            await page.goto(pagesLinks[i]);
+        for (let i = 0; i < 50; i++) { // NOT: pageLinks.length kaldırıldı, yerine statik olarak 50 verildi farklı mağazalada bu duruma göre uygulanmalı
+            await page.goto(url + "?sayfa=" + i);
             let products = await page.evaluate(this.getProductsEvaluate);
             data = data.concat(products);
             this.log().info(`Getting products; Page: ${i + 1}; Shop: ${this.shopId};`);
