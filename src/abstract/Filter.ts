@@ -1,5 +1,3 @@
-import LogDna from "../LogDna";
-
 abstract class Filter {
     abstract getFilters(): object[];
 
@@ -22,7 +20,7 @@ abstract class Filter {
 
             let result: boolean = filterFunction(aValue, bValue);
 
-            LogDna.info(`${filterName} attribute check is ${result} | =>(${aValue} - ${bValue})<=`);
+            console.log(`${filterName} attribute check is ${result} | =>(${aValue} - ${bValue})<=`);
 
             if (!result) {
                 applyResult = false;

@@ -91,28 +91,28 @@ abstract class Shop {
                 if (productFilter.length > 0) {
                     doc.subProducts[index] = product;
                     await ShopProduct.findOneAndUpdate(filter, doc);
-                    LogDna.info(`Product '${product.name}' updated Shop: ${this.shopId}`);
+                    this.log().info(`Product '${product.name}' updated Shop: ${this.shopId}`);
                 }
                 else if (!isMainProduct) {
                     let firstSub: IProduct = doc.subProducts[0];
 
                     if (this.checkAttrs(firstSub.attributes, product.attributes, product.categories[0])) {
-                        LogDna.info(`updateAndCreateProducts Processing in ${product.id}-${product.name} | Main ${firstSub.id}-${firstSub.name}`);
+                        this.log().info(`updateAndCreateProducts Processing in ${product.id}-${product.name} | Main ${firstSub.id}-${firstSub.name}`);
 
                         doc.subProducts.push(product);
                         await ShopProduct.findOneAndUpdate(filter, doc);
-                        LogDna.info(`New product '${product.name}' added Shop: ${this.shopId}`);
+                        this.log().info(`New product '${product.name}' added Shop: ${this.shopId}`);
                     } else {
-                        LogDna.warn(`Adding failed product attributes not match`);
+                        this.log().warn(`Adding failed product attributes not match`);
                     }
                 }
                 else {
                     await this.createShopProductFromProduct(product).save();
-                    LogDna.info(`Product '${product.name}' saved Shop: ${this.shopId}`);
+                    this.log().info(`Product '${product.name}' saved Shop: ${this.shopId}`);
                 }
             } else {
                 await this.createShopProductFromProduct(product).save();
-                LogDna.info(`Product '${product.name}' saved Shop: ${this.shopId}`);
+                this.log().info(`Product '${product.name}' saved Shop: ${this.shopId}`);
             }
         }
     };

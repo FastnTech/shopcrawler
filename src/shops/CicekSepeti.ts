@@ -3,7 +3,7 @@ import { Page } from 'puppeteer';
 import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
-import LaptopFilters from '../Filters/trendyol/LaptopFilters';
+import LaptopFilters from '../Filters/ciceksepeti/LaptopFilters';
 import * as path from 'path';
 
 class CicekSepeti extends Shop {
@@ -40,6 +40,8 @@ class CicekSepeti extends Shop {
 
             return links;
         });
+
+        productUrls = productUrls.slice(0, 20);
 
         let products = [];
 
@@ -116,7 +118,7 @@ class CicekSepeti extends Shop {
 
                     if (attrName === "Ekran Boyutu") {
                         attrName = "Ekran Boyutu";
-                        attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                        attrValue = attrValue.split('-')[0].replace(/[^0-9.,]/g, '').replace(/,/g, '.');
                     }
 
                     attributes.push({
