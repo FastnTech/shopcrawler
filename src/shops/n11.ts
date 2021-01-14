@@ -4,6 +4,7 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/n11/LaptopFilters';
+import * as path from 'path';
 
 class n11 extends Shop {
     shopId: string = "n11";
@@ -91,7 +92,9 @@ class n11 extends Shop {
 
         await this.sleep(1500);
 
-        let data = await page.evaluate(() => {
+        await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js') });
+
+        let data = await page.evaluate((category) => {
             try {
                 if (document.querySelector('[id="outOfStock"]').getAttribute("value") === "true") {
                     return null;
@@ -112,45 +115,11 @@ class n11 extends Shop {
                 document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
                     let attrName = e.querySelector('.label').textContent.trim();
                     let attrValue = e.querySelector('.data').textContent.trim();
-
-                    if (attrName === "Ekran Kartı Belleği") {
-                        attrName = "Ekran Kartı Hafızası";
-                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                    }
-
-                    if (attrName === "Sistem Belleği (Gb)") {
-                        attrName = "RAM";
-                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                    }
-
-                    if (attrName === "SSD") {
-                        attrName = "SSD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "Disk Kapasitesi") {
-                        attrName = "HDD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "İşlemci") {
-                        attrName = "İşlemci";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "İşlemci Modeli") {
-                        attrName = "İşlemci Model";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "Ekran Boyutu") {
-                        attrName = "Ekran Boyutu";
-                        attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                    }
+                    let generalized = n11Generalizer[category](attrName, attrValue);
 
                     attributes.push({
-                        "attributeName": attrName,
-                        "attributeValue": attrValue
+                        "attributeName": generalized.attrName,
+                        "attributeValue": generalized.attrValue
                     });
                 });
 
@@ -174,7 +143,7 @@ class n11 extends Shop {
             } catch (err) {
                 return null;
             }
-        });
+        }, category);
 
         if (data) {
             data.categories = [

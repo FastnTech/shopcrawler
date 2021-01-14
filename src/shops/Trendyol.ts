@@ -4,6 +4,7 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/trendyol/LaptopFilters';
+import * as path from 'path';
 
 class Trendyol extends Shop {
     shopId: string = "trendyol";
@@ -69,7 +70,9 @@ class Trendyol extends Shop {
 
         await this.sleep(1500);
 
-        let data = await page.evaluate(() => {
+        await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js')})
+
+        let data = await page.evaluate((category) => {
             try {
                 // giriş yapmış kullanıcılar için .so (sold out) yok .notify-me-btn var
                 if (document.querySelector('.pr-in-btn.add-to-bs.so') !== null) {
@@ -95,40 +98,11 @@ class Trendyol extends Shop {
                 document.querySelectorAll('.pr-prop .prop-item').forEach((e) => {
                     let attrName = e.querySelector('.item-key').textContent.trim().replace(/:/g, '');
                     let attrValue = e.querySelector('.item-value').textContent.trim();
-
-                    if (attrName === "Ram (Sistem Belleği)") {
-                        attrName = "RAM";
-                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                    }
-
-                    if (attrName === "SSD Kapasitesi") {
-                        attrName = "SSD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "Kapasite") {
-                        attrName = "HDD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "İşlemci Tipi") {
-                        attrName = "İşlemci";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "İşlemci Modeli") {
-                        attrName = "İşlemci Model";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "Ekran Boyutu") {
-                        attrName = "Ekran Boyutu";
-                        attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                    }
+                    let generalized = trendyolGeneralizer[category](attrName, attrValue);
 
                     attributes.push({
-                        "attributeName": attrName,
-                        "attributeValue": attrValue
+                        "attributeName": generalized.attrName,
+                        "attributeValue": generalized.attrValue
                     });
                 });
 
@@ -152,7 +126,7 @@ class Trendyol extends Shop {
             } catch (err) {
                 return null;
             }
-        });
+        }, category);
 
         if (data) {
             data.categories = [

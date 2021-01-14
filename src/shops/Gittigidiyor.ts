@@ -4,6 +4,7 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from '../interfaces/IProduct';
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/gittigidiyor/LaptopFilters';
+import * as path from 'path';
 
 class Gittigidiyor extends Shop {
     shopId: string = "gittigidiyor";
@@ -69,7 +70,9 @@ class Gittigidiyor extends Shop {
 
         await this.sleep(1500);
 
-        let data = await page.evaluate(() => {
+        await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js')});
+
+        let data = await page.evaluate((category) => {
             try {
                 let id = document.querySelector('#productId').getAttribute('value');
                 let productName = (document.querySelector('#sp-title') || { textContent: "" }).textContent;
@@ -101,39 +104,11 @@ class Gittigidiyor extends Shop {
                             return;
                         }
     
-                        if (attrName === "Bellek (RAM)") {
-                            attrName = "RAM";
-                            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                        }
-    
-                        if (attrName === "Sabit Disk (SSD) Boyutu") {
-                            attrName = "SSD";
-                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                        }
-    
-                        if (attrName === "Sabit Disk (HDD) Boyutu") {
-                            attrName = "HDD";
-                            attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                        }
-    
-                        if (attrName === "CPU Serisi") {
-                            attrName = "İşlemci";
-                            attrValue = attrValue.toLocaleUpperCase();
-                        }
-    
-                        if (attrName === "CPU Modeli") {
-                            attrName = "İşlemci Model";
-                            attrValue = attrValue.toLocaleUpperCase();
-                        }
-    
-                        if (attrName === "Ekran Boyutu") {
-                            attrName = "Ekran Boyutu";
-                            attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                        }
-    
+                        let generalized = gittigidiyorGeneralizer[category](attrName, attrValue);
+
                         attributes.push({
-                            "attributeName": attrName,
-                            "attributeValue": attrValue
+                            "attributeName": generalized.attrName,
+                            "attributeValue": generalized.attrValue
                         });
                     });
                 }
@@ -242,7 +217,7 @@ class Gittigidiyor extends Shop {
             } catch (err) {
                 return null;
             }
-        });
+        }, category);
 
         if (data) {
             data.categories = [

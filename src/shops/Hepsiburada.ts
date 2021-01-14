@@ -3,6 +3,7 @@ import { Page } from 'puppeteer';
 import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
+import * as path from 'path';
 
 class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com";
@@ -114,7 +115,9 @@ class Hepsiburada extends Shop {
             return null;
         }
 
-        let data = await page.evaluate(() => {
+        await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js')});
+
+        let data = await page.evaluate((category) => {
             //stock check
             if (document.querySelector('.product-detail-box[style="display: none"]') === null) {
                 return;
@@ -135,50 +138,11 @@ class Hepsiburada extends Shop {
             document.querySelectorAll('[class="data-list tech-spec"] tr').forEach((e) => {
                 let attrName = e.querySelector('th').textContent;
                 let attrValue = e.querySelector('td').textContent;
-
-                if (attrName === "Bellek Hızı") {
-                    attrName = "RAM Hızı";
-                    attrValue = attrValue.replace(/[^0-9]/g, '') + " MHZ";
-                }
-
-                if (attrName === "Ekran Kartı Hafızası") {
-                    attrName = "Ekran Kartı Hafızası";
-                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                }
-
-                if (attrName === "Ram (Sistem Belleği)") {
-                    attrName = "RAM";
-                    attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                }
-
-                if (attrName === "SSD Kapasitesi") {
-                    attrName = "SSD";
-                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                }
-
-                if (attrName === "Harddisk Kapasitesi") {
-                    attrName = "HDD";
-                    attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                }
-
-                if (attrName === "İşlemci") {
-                    attrName = "İşlemci Model";
-                    attrValue = attrValue.toLocaleUpperCase();
-                }
-
-                if (attrName === "İşlemci Tipi") {
-                    attrName = "İşlemci";
-                    attrValue = attrValue.toLocaleUpperCase();
-                }
-
-                if (attrName === "Ekran Boyutu") {
-                    attrName = "Ekran Boyutu";
-                    attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                }
+                let generalized = hepsiburadaGeneralizer[category](attrName, attrValue);
 
                 attributes.push({
-                    "attributeName": attrName,
-                    "attributeValue": attrValue
+                    "attributeName": generalized.attrName,
+                    "attributeValue": generalized.attrValue
                 });
             });
 
@@ -199,7 +163,7 @@ class Hepsiburada extends Shop {
                 shopId: '',
                 mainId: id
             }
-        });
+        }, category);
 
         if (data) {
             data.categories = [

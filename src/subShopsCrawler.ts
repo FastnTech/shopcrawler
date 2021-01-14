@@ -22,7 +22,7 @@ import CicekSepeti from './shops/CicekSepeti';
     ];
     let hepsi = new Hepsiburada();
 
-    for (let category in categories) {
+    for (let category of categories) {
         let mainShopProducts: IShopProduct[] = await hepsi.getProductsByCategory(category);
 
         let nonbir = new n11();

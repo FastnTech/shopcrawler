@@ -263,6 +263,7 @@ abstract class Shop {
         shopProduct.id = data.id;
         shopProduct.name = data.name;
         shopProduct.subProducts.push(data);
+        shopProduct.category = data.categories[0];
 
         return shopProduct;
     }

@@ -70,10 +70,10 @@ class CicekSepeti extends Shop {
             window.scrollBy(0, window.innerHeight);
         });
 
-        await page.addScriptTag({path: path.join(__dirname, '../../dist/core/FunctionInjector.js')}); // local dev
-        //await page.addScriptTag({path: path.join(__dirname, '../FunctionInjector.js')}); // circle ci
+        await page.addScriptTag({path: path.join(__dirname, '../../dist/core/FunctionInjector.js')});
+        await page.addScriptTag({path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js')});
 
-        let data: any = await page.evaluate(() => {
+        let data: any = await page.evaluate((category) => {
             try {
                 //out-of-stock check
                 if (document.querySelector('.product__not-available.js-product-not-available.js-no-stock') !== null || document.querySelector('#productCode') === null) {
@@ -95,40 +95,11 @@ class CicekSepeti extends Shop {
                 document.querySelectorAll('.product__specifications__table-body .product__specifications__table-row').forEach((e) => {
                     let attrName = e.querySelectorAll('.product__specifications__table-cell')[0].textContent.trim();
                     let attrValue = e.querySelectorAll('.product__specifications__table-cell')[1].textContent.trim();
-
-                    if (attrName === "Ram (Sistem Belleği)") {
-                        attrName = "RAM";
-                        attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
-                    }
-
-                    if (attrName === "SSD Kapasitesi") {
-                        attrName = "SSD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "Kapasite") {
-                        attrName = "HDD";
-                        attrValue = attrValue.replace(/[^0-9 TGBtgb]/g, '').toUpperCase().trim();
-                    }
-
-                    if (attrName === "İşlemci Tipi") {
-                        attrName = "İşlemci";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "İşlemci Modeli") {
-                        attrName = "İşlemci Model";
-                        attrValue = attrValue.toLocaleUpperCase();
-                    }
-
-                    if (attrName === "Ekran Boyutu") {
-                        attrName = "Ekran Boyutu";
-                        attrValue = attrValue.split('-')[0].replace(/[^0-9.,]/g, '').replace(/,/g, '.');
-                    }
+                    let generalized = cicekSepetiGeneralizer[category](attrName, attrValue);
 
                     attributes.push({
-                        "attributeName": attrName,
-                        "attributeValue": attrValue
+                        "attributeName": generalized.attrName,
+                        "attributeValue": generalized.attrValue
                     });
                 });
 
@@ -152,7 +123,7 @@ class CicekSepeti extends Shop {
             } catch (err) {
                 return null;
             }
-        });
+        }, category);
 
         if (data) {
             data.categories = [
