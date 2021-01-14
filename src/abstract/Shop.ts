@@ -1,8 +1,8 @@
 import { Page } from 'puppeteer';
 import ShopCategory, { IShopCategory } from '../entities/ShopCategory';
 import ShopProduct, { IShopProduct } from '../entities/ShopProduct';
-import { catDatabaseService, catCategoryProd, catProductProd } from '../LogConfig';
-import LogDna from "../LogDna";
+import { catDatabaseService, catProductProd } from '../loggers/LogConfig';
+import LogDna from "../loggers/LogDna";
 import {IProduct} from "../interfaces/IProduct";
 import {Product} from "../models/Product";
 import Filter from './Filter';
@@ -132,6 +132,15 @@ abstract class Shop {
     }
 
     /**
+     * Verilen kategoriye göre ürünleri çeker
+     * 
+     * @param category Kategori adı
+     */
+    async getProductsByCategory(category: string): Promise<IShopProduct[]> {
+        return await ShopProduct.find({ category: category})
+    }
+
+    /**
      * Tüm ürünleri çeker.
      */
     async getAllProductsFromDatabase(): Promise<IShopProduct[]> {
@@ -234,7 +243,7 @@ abstract class Shop {
             categories.push(category);
         });
 
-        catCategoryProd.info(() => `Successfull: Array to Category List | Shop: ${this.shopId}`);
+        catProductProd.info(() => `Successfull: Array to Category List | Shop: ${this.shopId}`);
 
         return categories;
     }
@@ -298,11 +307,11 @@ abstract class Shop {
      * Loglama fonksiyonu.
      * 2 çeşit loglama yapılabiliyor.
      * Eğer logların logdna e gönderilmesi isteniyorsa LogDna nesnesi return edilmeli
-     * catCategoryProd nesnesi sadece console işlevi görmektedir
+     * catProductProd nesnesi sadece console işlevi görmektedir
      * LogDna console a herhangi bir alert basmaz
      */
     log = function() {
-        return catCategoryProd;
+        return catProductProd;
     }
 }
 
