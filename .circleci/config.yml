@@ -34,6 +34,10 @@ jobs:
         paths:
         - ~/.npm
     - run:
+        command: npm run bild
+        name: Run NPM Build
+        working_directory: ~/project
+    - run:
         command: npm run test
         name: Run NPM Tests
         working_directory: ~/project

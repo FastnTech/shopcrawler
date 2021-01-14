@@ -75,13 +75,18 @@ class CicekSepeti extends Shop {
 
         let data: any = await page.evaluate(() => {
             try {
+                //out-of-stock check
+                if (document.querySelector('.product__not-available.js-product-not-available.js-no-stock') !== null || document.querySelector('#productCode') === null) {
+                    return null;
+                }
+
                 let id = getAttributeFromElement(document.querySelector('#productCode'), 'value');
                 let productName = getTextContentFromElement(document.querySelector('.product__info__title'));
                 let price = getPriceFromElement(document.querySelector('.product__info__new-price'));
                 let originalPrice = getPriceFromElement(document.querySelector('.product__info__old-price')) || price;
                 let dealerName = getTextContentFromElement(document.querySelector('a[href*="storeid"]'));
                 let dealerPoint = '';
-                let shipping = getTextContentFromElement(document.querySelector('.js-delivery-estimation')).split(':')[1].trim();
+                let shipping = getTextContentFromElement(document.querySelector('.js-delivery-estimation')).trim();
                 let comments = getTextContentFromElement(document.querySelector('.js-comments-count'));
                 let brand = '';
                 let image = getAttributeFromElement(document.querySelector('.product__image'), 'src');
