@@ -1,5 +1,4 @@
 import Hepsiburada from "../../src/shops/Hepsiburada";
-import "../../src/database";
 
 let hepsiburada = new Hepsiburada();
 

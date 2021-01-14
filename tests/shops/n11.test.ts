@@ -1,5 +1,4 @@
 import n11 from "../../src/shops/n11";
-import "../../src/database";
 
 let nonbir = new n11();
 

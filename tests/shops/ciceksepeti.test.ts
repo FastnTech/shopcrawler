@@ -1,5 +1,4 @@
 import CicekSepeti from "../../src/shops/CicekSepeti";
-import "../../src/database";
 
 let ciceksepeti = new CicekSepeti();
 

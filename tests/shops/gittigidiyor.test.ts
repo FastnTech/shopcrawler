@@ -1,5 +1,4 @@
 import Gittigidiyor from "../../src/shops/Gittigidiyor";
-import "../../src/database";
 
 let gittigidiyor = new Gittigidiyor();
 

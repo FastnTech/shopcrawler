@@ -1,5 +1,4 @@
 import Trendyol from "../../src/shops/Trendyol";
-import "../../src/database";
 
 let trendyol = new Trendyol();
 
