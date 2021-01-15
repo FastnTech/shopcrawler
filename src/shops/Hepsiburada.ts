@@ -9,7 +9,7 @@ class Hepsiburada extends Shop {
     shopUrl = "https://hepsiburada.com";
     shopName = "Hepsiburada";
     shopId = "hepsiburada";
-    laptopFilters: Filter = null;
+    filters: { [x: string]: Filter; } = null;
 
     getProductsEvaluate () {
         let products = document.querySelectorAll('.product-list li');

@@ -4,23 +4,23 @@ class LaptopFilters extends Filter {
     getFilters(): object[] {
         return [
             {
-                name: "RAM",
+                name: ATTR_RAM,
                 filter: this.ramFilter
             },
             {
-                name: "Ekran Boyutu",
+                name: ATTR_SCREEN_SIZE,
                 filter: this.ekranFilter
             },
             {
-                name: "SSD",
+                name: ATTR_SSD,
                 filter: this.ssdFilter
             },
             {
-                name: "HDD",
+                name: ATTR_HDD,
                 filter: this.hddFilter
             },
             {
-                name: "İşlemci",
+                name: ATTR_CPU,
                 filter: this.cpuFilter
             }
         ];

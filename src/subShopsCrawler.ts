@@ -18,7 +18,8 @@ import CicekSepeti from './shops/CicekSepeti';
     let page = await pageManager.create(browser);
 
     let categories = [
-        "Laptop"
+        "Masaüstü Bilgisayar"
+        //"Laptop"
     ];
     let hepsi = new Hepsiburada();
 
@@ -31,10 +32,10 @@ import CicekSepeti from './shops/CicekSepeti';
         let ciceksepeti = new CicekSepeti();
 
         let shops: Shop[] = [
-            ciceksepeti,
             gittigidiyor,
             trendyol,
             nonbir,
+            ciceksepeti,
         ];
 
         for (let i = 0; i < shops.length; i++) {

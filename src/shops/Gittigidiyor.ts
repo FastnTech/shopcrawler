@@ -4,13 +4,17 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from '../interfaces/IProduct';
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/gittigidiyor/LaptopFilters';
+import DesktopPCFilters from '../Filters/gittigidiyor/DesktopPCFilters';
 import * as path from 'path';
 
 class Gittigidiyor extends Shop {
     shopId: string = "gittigidiyor";
     shopUrl: string = "https://www.gittigidiyor.com/";
     shopName: string = "Gittigidiyor";
-    laptopFilters: Filter = new LaptopFilters();
+    filters: { [x: string]: Filter; } = {
+        "Laptop": new LaptopFilters(),
+        "Masaüstü Bilgisayar": new DesktopPCFilters()
+    };
 
     getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]> {
         throw new Error('Method not implemented.');

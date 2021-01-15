@@ -11,7 +11,7 @@ abstract class Shop {
     abstract shopId: string;
     abstract shopUrl: string;
     abstract shopName: string;
-    abstract laptopFilters: Filter;
+    abstract filters: { [x: string]: Filter; };
 
     /**
      * Bir kategori sayfasındaki tüm ürünlerin detay
@@ -157,8 +157,8 @@ abstract class Shop {
     checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {
         let result: boolean = false;
 
-        if (category === "Laptop") {
-            result = this.laptopFilters.apply(attributes, _attributes);
+        if (this.filters.hasOwnProperty(category)) {
+            result = this.filters[category].apply(attributes, _attributes);
         }
 
         return result;

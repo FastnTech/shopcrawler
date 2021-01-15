@@ -10,7 +10,9 @@ class Trendyol extends Shop {
     shopId: string = "trendyol";
     shopUrl: string = "https://www.trendyol.com";
     shopName: string = "Trendyol";
-    laptopFilters: Filter = new LaptopFilters();
+    filters: { [x: string]: Filter; } = {
+        "Laptop": new LaptopFilters()
+    };
 
     getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]> {
         throw new Error('Method not implemented.');

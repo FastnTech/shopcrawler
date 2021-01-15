@@ -10,7 +10,9 @@ class n11 extends Shop {
     shopId: string = "n11";
     shopName: string = "n11";
     shopUrl: string = "https://www.n11.com/";
-    laptopFilters: Filter = new LaptopFilters();
+    filters: { [x: string]: Filter; } = {
+        "Laptop": new LaptopFilters()
+    };
 
     getProductsEvaluate () {
         let products = document.querySelectorAll('.group.listingGroup.resultListGroup.import-search-view .catalogView ul li');

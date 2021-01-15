@@ -10,11 +10,12 @@ import {IProduct} from "./interfaces/IProduct";
     let page = await browser.newPage();
 
     let hepsi = new Hepsiburada();
-    let categoryPageUri = 'https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98';
-    let shopProducts: IProduct[] = await hepsi.getProductsFromCategoryPage(categoryPageUri, page);
+    let categoryPageUri = 'https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayarlar-c-98'; // "Laptop"
+    let desktopPCPageUri = 'https://www.hepsiburada.com/masaustu-bilgisayarlar-c-34'; // "Masaüstü Bilgisayar"
+    let shopProducts: IProduct[] = await hepsi.getProductsFromCategoryPage(desktopPCPageUri, page);
 
     for (let shopProduct of shopProducts) {
-        let _product: IProduct = await hepsi.getProductDetailFromProductPage(shopProduct.url, "Laptop", page);
+        let _product: IProduct = await hepsi.getProductDetailFromProductPage(shopProduct.url, "Masaüstü Bilgisayar", page);
 
         if (_product && _product.id && _product.id !== "") {
             _product.mainId = shopProduct.id;

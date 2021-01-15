@@ -10,7 +10,9 @@ class CicekSepeti extends Shop {
     shopId: string = "ciceksepeti";
     shopUrl: string = "https://www.ciceksepeti.com";
     shopName: string = "ÇiçekSepeti";
-    laptopFilters: Filter = new LaptopFilters();
+    filters: { [x: string]: Filter; } = {
+        "Laptop": new LaptopFilters()
+    };
 
     getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]> {
         throw new Error('Method not implemented.');
