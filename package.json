@@ -7,8 +7,9 @@
     "clean": "rimraf dist",
     "build": "npx tsc --importHelpers",
     "watch:build": "tsc --watch --importHelpers",
-    "subshops": "node ./dist/subShopsCrawler.js",
-    "mainshop": "node ./dist/mainShopCrawler.js",
+    "mainshop": "node ./dist/crawlers/mainShopCrawler.js",
+    "subshops:all": "node ./dist/crawlers/subShopsCrawler.js",
+    "subshops:motherboard": "node ./dist/crawlers/motherBoardCrawler.js",
     "test": "jest --detectOpenHandles --runInBand --forceExit",
     "test-npx": "npx jest --detectOpenHandles --runInBand --forceExit"
   },

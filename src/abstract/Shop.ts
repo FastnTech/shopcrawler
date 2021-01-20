@@ -155,7 +155,7 @@ abstract class Shop {
      * @param category main ürünün kategorisi
      */
     checkAttrs(attributes: object[], _attributes: object[], category: string): boolean {
-        let result: boolean = false;
+        let result: boolean = true;
 
         if (this.filters.hasOwnProperty(category)) {
             result = this.filters[category].apply(attributes, _attributes);

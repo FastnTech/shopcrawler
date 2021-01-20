@@ -14,6 +14,14 @@ const ATTR_RAM_TYPE = "Ram Tipi";
 const ATTR_HDD_SPEED = "HDD Hızı";
 const ATTR_PSU = "PSU";
 
+const ATTR_CHIPSET = "Chipset";
+const ATTR_USB_20 = "USB 2.0";
+const ATTR_USB_30 = "USB 3.0";
+const ATTR_USB_31 = "USB 3.1";
+const ATTR_HDMI_OUTPUT = "HDMI Çıkışı";
+const ATTR_M2_SLOT = "M.2 Slotu";
+const ATTR_MOTHERBOARD_TYPE = "Anakart Boyutu";
+
 const cicekSepetiGeneralizer = {
     "Laptop": (attrName, attrValue) => {
         if (attrName === "Ram (Sistem Belleği)") {
@@ -95,6 +103,45 @@ const n11Generalizer = {
             attrValue: attrValue
         };
     },
+    "Masaüstü Bilgisayar": (attrName, attrValue) => {
+
+    },
+    "Anakart": (attrName, attrValue) => {
+        if (attrName === "Bellek Yuvası Sayısı") {
+            attrName = ATTR_RAM_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Bellek Türü") {
+            attrName = ATTR_RAM_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Bellek Kapasitesi") {
+            attrName = ATTR_RAM_MAX;
+            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+        }
+
+        if (attrName === "M.2 Yuvası Sayısı") {
+            attrName = ATTR_M2_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Yonga Seti (Chipset)") {
+            attrName = ATTR_CHIPSET;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Anakart Yapısı") {
+            attrName = ATTR_MOTHERBOARD_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        return {
+            attrName: attrName,
+            attrValue: attrValue
+        }
+    }
 }
 
 const gittigidiyorGeneralizer = {
@@ -174,6 +221,42 @@ const gittigidiyorGeneralizer = {
             attrName: attrName,
             attrValue: attrValue
         }
+    },
+    "Anakart": (attrName, attrValue) => {
+        if (attrName === "Bellek Yuvası Sayısı") {
+            attrName = ATTR_RAM_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Bellek Teknolojisi") {
+            attrName = ATTR_RAM_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Bellek Kapasitesi") {
+            attrName = ATTR_RAM_MAX;
+            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+        }
+
+        if (attrName === "M.2 Yuvası Sayısı") {
+            attrName = ATTR_M2_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Yonga Seti Modeli") {
+            attrName = ATTR_CHIPSET;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Form Faktörü") {
+            attrName = ATTR_MOTHERBOARD_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        return {
+            attrName: attrName,
+            attrValue: attrValue
+        }
     }
 }
 
@@ -207,6 +290,45 @@ const trendyolGeneralizer = {
         if (attrName === "Ekran Boyutu") {
             attrName = ATTR_SCREEN_SIZE;
             attrValue = attrValue.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+        }
+
+        return {
+            attrName: attrName,
+            attrValue: attrValue
+        }
+    },
+    "Masaüstü Bilgisayar": (attrName, attrValue) => {
+
+    },
+    "Anakart": (attrName, attrValue) => {
+        if (attrName === "Bellek Yuvası Sayısı") {
+            attrName = ATTR_RAM_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Bellek Türü") {
+            attrName = ATTR_RAM_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Bellek Kapasitesi") {
+            attrName = ATTR_RAM_MAX;
+            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+        }
+
+        if (attrName === "M.2 Yuvası Sayısı") {
+            attrName = ATTR_M2_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Yonga Seti (Chipset)") {
+            attrName = ATTR_CHIPSET;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Anakart Yapısı") {
+            attrName = ATTR_MOTHERBOARD_TYPE;
+            attrValue = attrValue.trim();
         }
 
         return {
@@ -332,6 +454,67 @@ const hepsiburadaGeneralizer = {
         if (attrName === "İşlemci Tipi") {
             attrName = ATTR_CPU;
             attrValue = attrValue.toLocaleUpperCase();
+        }
+
+        return {
+            attrName: attrName,
+            attrValue: attrValue
+        }
+    },
+    "Anakart": (attrName, attrValue) => {
+        if (attrName === "RAM Frekansı") {
+            attrName = ATTR_RAM_SPEED;
+            attrValue = attrValue.replace(/[^0-9]/g, '') + " MHZ";
+        }
+
+        if (attrName === "Ram Slotu") {
+            attrName = ATTR_RAM_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "Ram Tipi") {
+            attrName = ATTR_RAM_TYPE;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Ram Kapasitesi") {
+            attrName = ATTR_RAM_MAX;
+            attrValue = attrValue.replace(/[^0-9]/g, '') + " GB";
+        }
+
+        if (attrName === "USB 2.0") {
+            attrName = ATTR_USB_20;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "USB 3.0") {
+            attrName = ATTR_USB_30;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "USB 3.1") {
+            attrName = ATTR_USB_31;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "M.2 Slotu") {
+            attrName = ATTR_M2_SLOT;
+            attrValue = attrValue.replace(/[^0-9]/g, '');
+        }
+
+        if (attrName === "HDMI Çıkışı") {
+            attrName = ATTR_HDMI_OUTPUT;
+            attrValue = attrValue.toUpperCase();
+        }
+
+        if (attrName === "Chipset") {
+            attrName = ATTR_CHIPSET;
+            attrValue = attrValue.trim();
+        }
+
+        if (attrName === "Anakart Boyutu") {
+            attrName = ATTR_MOTHERBOARD_TYPE;
+            attrValue = attrValue.trim();
         }
 
         return {

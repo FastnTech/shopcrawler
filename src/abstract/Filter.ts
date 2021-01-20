@@ -10,6 +10,7 @@ abstract class Filter {
     apply (attributesA: any, attributesB: any): boolean {
         let filters = this.getFilters();
         let applyResult: boolean = false;
+        let noneCounter: number = 0;
 
         for (let i = 0; i < filters.length; i++) {
             const filterName = filters[i]["name"];
@@ -17,6 +18,10 @@ abstract class Filter {
 
             let aValue: string = this.attributeFilter(attributesA, filterName);
             let bValue: string = this.attributeFilter(attributesB, filterName);
+
+            if (aValue === "NONE" && bValue === "NONE") {
+                noneCounter++;
+            }
 
             let result: boolean = filterFunction(aValue, bValue);
 
@@ -30,7 +35,7 @@ abstract class Filter {
             }
         }
 
-        return applyResult;
+        return noneCounter === filters.length ? false : applyResult;
     };
 }
 

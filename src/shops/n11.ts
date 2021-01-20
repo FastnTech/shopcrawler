@@ -4,6 +4,7 @@ import { IShopCategory } from '../entities/ShopCategory';
 import { IProduct } from "../interfaces/IProduct";
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/n11/LaptopFilters';
+import MotherboardFilters from '../Filters/n11/MotherboardFilters';
 import * as path from 'path';
 
 class n11 extends Shop {
@@ -11,7 +12,8 @@ class n11 extends Shop {
     shopName: string = "n11";
     shopUrl: string = "https://www.n11.com/";
     filters: { [x: string]: Filter; } = {
-        "Laptop": new LaptopFilters()
+        "Laptop": new LaptopFilters(),
+        "Anakart": new MotherboardFilters()
     };
 
     getProductsEvaluate () {
@@ -114,16 +116,31 @@ class n11 extends Shop {
                 let image = document.querySelector('.imgObj img').getAttribute('src');
                 let attributes = [];
 
-                document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
-                    let attrName = e.querySelector('.label').textContent.trim();
-                    let attrValue = e.querySelector('.data').textContent.trim();
-                    let generalized = n11Generalizer[category](attrName, attrValue);
+                let unfList = document.querySelectorAll('.unf-prop .unf-prop-list-item');
 
-                    attributes.push({
-                        "attributeName": generalized.attrName,
-                        "attributeValue": generalized.attrValue
+                if (unfList.length > 0) {
+                    unfList.forEach((e) => { 
+                        let attrName = e.querySelector('.unf-prop-list-title').textContent.trim();
+                        let attrValue = e.querySelector('.unf-prop-list-prop').textContent.trim();
+                        let generalized = n11Generalizer[category](attrName, attrValue);
+    
+                        attributes.push({
+                            "attributeName": generalized.attrName,
+                            "attributeValue": generalized.attrValue
+                        });
                     });
-                });
+                } else {
+                    document.querySelectorAll('.tabPanelItem.features .feaItem').forEach((e) => {
+                        let attrName = e.querySelector('.label').textContent.trim();
+                        let attrValue = e.querySelector('.data').textContent.trim();
+                        let generalized = n11Generalizer[category](attrName, attrValue);
+    
+                        attributes.push({
+                            "attributeName": generalized.attrName,
+                            "attributeValue": generalized.attrValue
+                        });
+                    });
+                }
 
                 return {
                     id: id,

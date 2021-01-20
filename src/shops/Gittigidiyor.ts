@@ -5,6 +5,7 @@ import { IProduct } from '../interfaces/IProduct';
 import Filter from '../abstract/Filter';
 import LaptopFilters from '../Filters/gittigidiyor/LaptopFilters';
 import DesktopPCFilters from '../Filters/gittigidiyor/DesktopPCFilters';
+import MotherboardFilters from '../Filters/gittigidiyor/MotherboardFilters';
 import * as path from 'path';
 
 class Gittigidiyor extends Shop {
@@ -13,7 +14,8 @@ class Gittigidiyor extends Shop {
     shopName: string = "Gittigidiyor";
     filters: { [x: string]: Filter; } = {
         "Laptop": new LaptopFilters(),
-        "Masaüstü Bilgisayar": new DesktopPCFilters()
+        "Masaüstü Bilgisayar": new DesktopPCFilters(),
+        "Anakart": new MotherboardFilters()
     };
 
     getProductsFromCategoryPage(url: string, page: Page): Promise<IProduct[]> {
