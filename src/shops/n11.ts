@@ -96,6 +96,7 @@ class n11 extends Shop {
 
         await this.sleep(1500);
 
+        await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/FunctionInjector.js') });
         await page.addScriptTag({ path: path.join(__dirname, '../../dist/core/AttributeGeneralizer.js') });
 
         let data = await page.evaluate((category) => {
@@ -104,16 +105,16 @@ class n11 extends Shop {
                     return null;
                 }
 
-                let id = document.querySelector('[name="skuId"]').getAttribute('value');
-                let productName = document.querySelector('.proName').textContent.trim();
-                let price = document.querySelector('.newPrice').textContent.replace(/[^0-9.,]/g, '');
-                let originalPrice = document.querySelector('.oldPrice ').textContent.replace(/[^0-9.,]/g, '') || price;
-                let dealerName = document.querySelector('.sallerTop a').textContent;
-                let dealerPoint = document.querySelector('.shopPoint .point') ? document.querySelector('.shopPoint .point').textContent.trim() : '-';
-                let shipping = document.querySelector('.cargoTime').textContent.trim();
-                let comments = document.querySelector('#tabProductCom').textContent.replace(/[^0-9]/g, '');
-                let brand = document.querySelector('a[href*="markalar"]').textContent.trim();
-                let image = document.querySelector('.imgObj img').getAttribute('src');
+                let id = getAttributeFromElement(document.querySelector('[name="skuId"]'), 'value');
+                let productName = getTextContentFromElement(document.querySelector('.proName'));
+                let price = getPriceFromElement(document.querySelector('.newPrice'));
+                let originalPrice = getPriceFromElement(document.querySelector('.oldPrice ')) || price;
+                let dealerName = getTextContentFromElement(document.querySelector('.main-seller-name'));
+                let dealerPoint = getTextContentFromElement(document.querySelector('.shopPoint .point'));
+                let shipping = getTextContentFromElement(document.querySelector('.cargoTime'));
+                let comments = getTextContentFromElement(document.querySelector('#tabProductCom')).replace(/[^0-9]/g, '');
+                let brand = getTextContentFromElement(document.querySelector('a[href*="markalar"]'));
+                let image = getAttributeFromElement(document.querySelector('.imgObj img'), 'src');
                 let attributes = [];
 
                 let unfList = document.querySelectorAll('.unf-prop .unf-prop-list-item');
