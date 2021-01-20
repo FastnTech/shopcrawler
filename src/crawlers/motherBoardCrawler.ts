@@ -1,4 +1,4 @@
-import './database';
+import '../database';
 import PageManager from "../core/PageManager";
 import BrowserManager from "../core/BrowserManager";
 import {IProduct} from "../interfaces/IProduct";
