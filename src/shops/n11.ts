@@ -101,7 +101,7 @@ class n11 extends Shop {
 
         let data = await page.evaluate((category) => {
             try {
-                if (getAttributeFromElement(document.querySelector('[id="outOfStock"]'), 'value') === "true") {
+                if (parseInt(getAttributeFromElement(document.querySelector('[id="skuStock"]'), 'value') || "0") < 1) {
                     return null;
                 }
 
